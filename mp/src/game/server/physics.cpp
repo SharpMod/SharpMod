@@ -137,7 +137,7 @@ public:
 	}
 
 	physicssound::soundlist_t m_impactSounds;
-	CUtlVector<physicssound::breaksound_t> m_breakSounds;
+	physicssound::breaksoundlist_t m_breakSounds;
 
 	CUtlVector<masscenteroverride_t>	m_massCenterOverrides;
 	CUtlVector<vehiclescript_t>			m_vehicleScripts;
@@ -264,6 +264,9 @@ void CPhysicsHook::LevelInitPreEntity()
 
 void CPhysicsHook::LevelInitPostEntity() 
 {
+	m_impactSounds.InitSharp();
+	m_breakSounds.InitSharp();
+
 	m_bPaused = false;
 }
 
@@ -276,6 +279,9 @@ void CPhysicsHook::LevelShutdownPreEntity()
 
 void CPhysicsHook::LevelShutdownPostEntity() 
 {
+	m_impactSounds.ShutdownSharp();
+	m_breakSounds.ShutdownSharp();
+
 	if ( !physenv )
 		return;
 
@@ -295,8 +301,8 @@ void CPhysicsHook::LevelShutdownPostEntity()
 
 	delete g_pShadowEntities;
 	g_pShadowEntities = NULL;
-	m_impactSounds.RemoveAll();
-	m_breakSounds.RemoveAll();
+	//m_impactSounds.RemoveAll();
+	//m_breakSounds.RemoveAll();
 	m_massCenterOverrides.Purge();
 	FlushVehicleScripts();
 }

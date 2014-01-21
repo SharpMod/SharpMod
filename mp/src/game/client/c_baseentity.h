@@ -36,6 +36,9 @@
 #include "toolframework/itoolentity.h"
 #include "tier0/threadtools.h"
 
+#include "sharp/sharp.h"
+#include "sharp/sharphelper.h"
+
 class C_Team;
 class IPhysicsObject;
 class IClientVehicle;
@@ -188,6 +191,11 @@ public:
 	virtual							~C_BaseEntity();
 
 	static C_BaseEntity				*CreatePredictedEntityByName( const char *classname, const char *module, int line, bool persist = false );
+
+	virtual SharpClass GetMonoClass();
+	SharpHandle	MonoHandle;
+	MonoObject* GetSharpEntity( void ) const;
+	char	m_iSharpClassname[MAX_PATH];
 	
 	// FireBullets uses shared code for prediction.
 	virtual void					FireBullets( const FireBulletsInfo_t &info );
@@ -1000,6 +1008,7 @@ public:
 	/////////////////
 
 	virtual bool					IsPlayer( void ) const { return false; };
+	virtual bool					IsSharpEntity( void ) const { return false; };
 	virtual bool					IsBaseCombatCharacter( void ) { return false; };
 	virtual C_BaseCombatCharacter	*MyCombatCharacterPointer( void ) { return NULL; }
 	virtual bool					IsNPC( void ) { return false; }
@@ -1603,8 +1612,9 @@ private:
 	QAngle							m_angNetworkAngles;
 
 	// Behavior flags
+public:
 	int								m_fFlags;
-
+private:
 	// used to cull collision tests
 	int								m_CollisionGroup;
 

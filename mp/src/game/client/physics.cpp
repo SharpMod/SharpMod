@@ -381,13 +381,14 @@ void CPhysicsSystem::Shutdown()
 // Level init, shutdown
 void CPhysicsSystem::LevelInitPreEntity( void )
 {
-	m_impactSounds.RemoveAll();
+	//m_impactSounds.RemoveAll();
 	PrecachePhysicsSounds();
 }
 
 void CPhysicsSystem::LevelInitPostEntity( void )
 {
 	PhysicsLevelInit();
+	m_impactSounds.InitSharp();
 }
 
 // The level is shutdown in two parts
@@ -413,6 +414,7 @@ void CPhysicsSystem::LevelShutdownPostEntity()
 	g_EntityCollisionHash = NULL;
 
 	physics->DestroyAllCollisionSets();
+	m_impactSounds.ShutdownSharp();
 
 	physenv = NULL;
 	g_PhysWorldObject = NULL;

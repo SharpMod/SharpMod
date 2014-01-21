@@ -2346,6 +2346,15 @@ void CBaseCombatCharacter::RemoveAllWeapons()
 	}
 }
 
+static void BaseRemoveAllWeapons(MonoObject* methods, EntityMonoObject *monoEntity, mono_bool removeSuit)
+{
+	ASSERT_DOMAIN();
+
+	CBasePlayer* player = monoEntity->GetPlayer();
+	player->RemoveAllWeapons();
+}
+static SharpMethodItem methodRemoveAllItems("Sharp.ServerPlayer::RemoveAllWeapons", BaseRemoveAllWeapons );
+
 
 // take health
 int CBaseCombatCharacter::TakeHealth (float flHealth, int bitsDamageType)
@@ -2994,6 +3003,23 @@ int CBaseCombatCharacter::GiveAmmo( int iCount, int iAmmoIndex, bool bSuppressSo
 
 	return iAdd;
 }
+
+static void CBaseCombatCharacterGiveAmmo(MonoObject* methods, EntityMonoObject *monoEntity, MonoString* szName, int iCount, mono_bool bSuppressSound)
+{
+	ASSERT_DOMAIN();
+
+	if(szName == nullptr)
+		mono_raise_exception( mono_get_exception_argument_null("szName") );
+
+	CBasePlayer* player = monoEntity->GetPlayer();
+	char* pstr = mono_string_to_utf8( szName );
+
+	//player->SelectItem(pstr, iSubType);
+	player->GiveAmmo(iCount, pstr, bSuppressSound != 0 );
+	mono_free(pstr);
+}
+static SharpMethodItem SharpCBaseCombatCharacterGiveAmmo("Sharp."MONO_CLASS"Player::GiveAmmo", CBaseCombatCharacterGiveAmmo );
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Give the player some ammo.

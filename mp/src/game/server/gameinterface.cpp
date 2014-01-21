@@ -90,6 +90,9 @@
 #include "serverbenchmark_base.h"
 #include "querycache.h"
 
+#include "sharp/sharp.h"
+#include "sharp/sharp_usermessage.h"
+#include "sharp/sharp_game.h"
 
 #ifdef TF_DLL
 #include "gc_clientsystem.h"
@@ -667,6 +670,8 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	if ( !sv_cheats )
 		return false;
 
+	g_Sharp.Setup();
+
 	g_pcv_commentary = g_pCVar->FindVar( "commentary" );
 	g_pcv_ThreadMode = g_pCVar->FindVar( "host_thread_mode" );
 	g_pcv_hideServer = g_pCVar->FindVar( "hide_server" );
@@ -862,6 +867,8 @@ bool CServerGameDLL::GameInit( void )
 		gameeventmanager->FireEvent( event );
 	}
 
+	g_Sharp.Initialize();
+
 	return true;
 }
 
@@ -869,6 +876,7 @@ bool CServerGameDLL::GameInit( void )
 // NOT on level transitions within a game
 void CServerGameDLL::GameShutdown( void )
 {
+	g_Sharp.Shutdown();
 	ResetGlobalState();
 }
 
@@ -1222,6 +1230,9 @@ void CServerGameDLL::GameFrame( bool simulating )
 	IGameSystem::FrameUpdatePreEntityThinkAllSystems();
 	GameStartFrame();
 
+	if( g_Sharp.ValidDomain() )
+		g_SharpGame->GameThink();
+
 #ifndef _XBOX
 #ifdef USE_NAV_MESH
 	TheNavMesh->Update();
@@ -1539,7 +1550,7 @@ void CServerGameDLL::Restore( CSaveRestoreData *s, bool b)
 bool CServerGameDLL::GetUserMessageInfo( int msg_type, char *name, int maxnamelength, int& size )
 {
 	if ( !usermessages->IsValidIndex( msg_type ) )
-		return false;
+		return g_sharpUserMessage.GetUserMessageInfo( msg_type, name, maxnamelength, size );
 
 	Q_strncpy( name, usermessages->GetUserMessageName( msg_type ), maxnamelength );
 	size = usermessages->GetUserMessageSize( msg_type );

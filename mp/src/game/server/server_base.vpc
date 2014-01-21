@@ -61,13 +61,43 @@ $Configuration
 
 	$Linker
 	{
-		$AdditionalDependencies			"$BASE winmm.lib" [$WIN32]
+		$AdditionalDependencies			"$BASE winmm.lib mono-2.0.lib" [$WIN32]
 		$SystemLibraries                                                        "iconv" [$OSXALL]
 	}
 }
 
 $Project
 {
+	$Folder "Sharp"
+	{
+		$File	"$SRCDIR\game\server\sharp\sharp_dt.cpp"
+		$File	"$SRCDIR\game\server\sharp\sharp_dt.h"
+		$File	"$SRCDIR\game\server\sharp\sharp_entity.cpp"
+		$File	"$SRCDIR\game\server\sharp\sharp_entity.h"
+		
+		$File	"$SRCDIR\game\shared\sharp\sharp_physics.cpp"
+		$File	"$SRCDIR\game\shared\sharp\concommand.cpp"
+		$File	"$SRCDIR\game\shared\sharp\concommand.h"
+		$File	"$SRCDIR\game\shared\sharp\entity.cpp"
+		$File	"$SRCDIR\game\shared\sharp\entity.h"
+		$File	"$SRCDIR\game\shared\sharp\entitylistner.cpp"
+		$File	"$SRCDIR\game\shared\sharp\entitylistner.h"
+		$File	"$SRCDIR\game\shared\sharp\sharp.cpp"
+		$File	"$SRCDIR\game\shared\sharp\sharp.h"
+		$File	"$SRCDIR\game\shared\sharp\sharp_engine.cpp"
+		$File	"$SRCDIR\game\shared\sharp\sharp_game.cpp"
+		$File	"$SRCDIR\game\shared\sharp\sharp_game.h"
+		$File	"$SRCDIR\game\shared\sharp\sharp_math.cpp"
+		$File	"$SRCDIR\game\shared\sharp\sharp_native_entity.cpp"
+		$File	"$SRCDIR\game\shared\sharp\sharp_native_entity.h"
+		$File	"$SRCDIR\game\shared\sharp\sharp_trace.cpp"
+		$File	"$SRCDIR\game\shared\sharp\sharp_usermessage.cpp"
+		$File	"$SRCDIR\game\shared\sharp\sharp_usermessage.h"
+		$File	"$SRCDIR\game\shared\sharp\sharphelper.cpp"
+		$File	"$SRCDIR\game\shared\sharp\sharphelper.h"
+		$File	"$SRCDIR\game\shared\sharp\writer.cpp"
+	}
+
 	$Folder "Replay"
 	{
 		$File	"gamedll_replay.cpp"

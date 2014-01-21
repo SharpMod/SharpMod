@@ -63,6 +63,10 @@
 #include "tier1/utlstring.h"
 #include "utlhashtable.h"
 
+#include "sharp/sharp_dt.h"
+#include "sharp/entitylistner.h"
+#include "sharp/entity.h"
+
 #if defined( TF_DLL )
 #include "tf_gamerules.h"
 #endif
@@ -259,6 +263,7 @@ void SendProxy_Angles( const SendProp *pProp, const void *pStruct, const void *p
 // This table encodes the CBaseEntity data.
 IMPLEMENT_SERVERCLASS_ST_NOBASE( CBaseEntity, DT_BaseEntity )
 	SendPropDataTable( "AnimTimeMustBeFirst", 0, &REFERENCE_SEND_TABLE(DT_AnimTimeMustBeFirst), SendProxy_ClientSideAnimation ),
+	SendPropSharp(),
 	SendPropInt			(SENDINFO(m_flSimulationTime),	SIMULATION_TIME_WINDOW_BITS, SPROP_UNSIGNED|SPROP_CHANGES_OFTEN|SPROP_ENCODED_AGAINST_TICKCOUNT, SendProxy_SimulationTime),
 
 #if PREDICTION_ERROR_CHECK_LEVEL > 1 
@@ -466,6 +471,14 @@ CBaseEntity::~CBaseEntity( )
 		// Remove this entity from the ent list (NOTE:  This Makes EHANDLES go NULL)
 		gEntList.RemoveEntity( GetRefEHandle() );
 	}
+
+	if( MonoHandle.IsValid() ){
+		EntityMonoObject* monoObject = (EntityMonoObject*) GetSharpEntity();
+
+		monoObject->entity = NULL;
+		MonoHandle.Release();
+	}
+ 
 }
 
 void CBaseEntity::PostConstructor( const char *szClassname )
@@ -506,6 +519,8 @@ void CBaseEntity::PostConstructor( const char *szClassname )
 
 	CheckHasThinkFunction( false );
 	CheckHasGamePhysicsSimulation();
+
+	g_SharpEntityListener->OnEntityCreated( this );
 }
 
 //-----------------------------------------------------------------------------
@@ -1435,6 +1450,22 @@ int CBaseEntity::OnTakeDamage( const CTakeDamageInfo &info )
 	return 1;
 }
 
+static int SharpBaseTakeDamage(MonoObject* methods, EntityMonoObject *monoEntity, SharpDamageInfo* sharpInfo )
+{
+	ASSERT_DOMAIN();
+	if( sharpInfo == nullptr )
+		mono_raise_exception( mono_get_exception_argument_null("DamageInfo") );
+
+	
+	const CTakeDamageInfo info = SharpGetDamageInfo(sharpInfo);
+	CBaseEntity* entity = monoEntity->GetEntity();
+
+	return entity->OnTakeDamage(info);
+}
+static SharpMethodItem SharpBaseTakeDamageItem("Sharp."MONO_CLASS"Entity::OnTakeDamage", SharpBaseTakeDamage);
+
+SharpMethodReference SharpAllowDamange("Sharp","Entity", "OnTakeDamage", 1); 
+
 //-----------------------------------------------------------------------------
 // Purpose: Scale damage done and call OnTakeDamage
 //-----------------------------------------------------------------------------
@@ -1500,7 +1531,17 @@ void CBaseEntity::TakeDamage( const CTakeDamageInfo &inputInfo )
 
 		//Msg("%s took %.2f Damage, at %.2f\n", GetClassname(), info.GetDamage(), gpGlobals->curtime );
 
-		OnTakeDamage( info );
+		MonoObject* entityObj = GetSharpEntity();
+		MonoMethod* method = SharpAllowDamange.GetVirtual(entityObj);
+		SharpDamageInfo* sharpInfo = SharpNewDamageInfo(info);
+
+		void* args[] = {
+			sharpInfo
+		};
+
+		sharp_safe_invoke(method, entityObj, args );
+
+		//OnTakeDamage( info );
 	}
 }
 
@@ -2111,6 +2152,8 @@ void CBaseEntity::StartTouch( CBaseEntity *pOther )
 	// notify parent
 	if ( m_pParent != NULL )
 		m_pParent->StartTouch( pOther );
+
+	g_SharpEntity->StartTouch( this, pOther );
 }
 
 void CBaseEntity::Touch( CBaseEntity *pOther )
@@ -2665,6 +2708,8 @@ void CBaseEntity::VPhysicsCollision( int index, gamevcollisionevent_t *pEvent )
 		PhysCollisionSound( this, pEvent->pObjects[index], CHAN_STATIC, pEvent->surfaceProps[index], pEvent->surfaceProps[otherIndex], pEvent->deltaCollisionTime, pEvent->collisionSpeed );
 	}
 	PhysCollisionScreenShake( pEvent, index );
+
+	g_SharpEntity->FireSharpCollisionEvent( this, index, pEvent );
 
 #if HL2_EPISODIC
 	// episodic does something different for when advisor shields are struck
@@ -3472,6 +3517,7 @@ void CBaseEntity::SetMoveType( MoveType_t val, MoveCollide_t moveCollide )
 
 void CBaseEntity::Spawn( void ) 
 {
+	g_SharpEntity->FireSpawn( this );
 }
 
 
@@ -3962,6 +4008,9 @@ bool CBaseEntity::AcceptInput( const char *szInputName, CBaseEntity *pActivator,
 			}
 		}
 	}
+
+	if(g_SharpEntity->FireAcceptInput(this, szInputName, pActivator, pCaller, Value ))
+		return true;
 
 	DevMsg( 2, "unhandled input: (%s) -> (%s,%s)\n", szInputName, STRING(m_iClassname), GetDebugName()/*,", from (%s,%s)" STRING(pCaller->m_iClassname), STRING(pCaller->m_iName)*/ );
 	return false;

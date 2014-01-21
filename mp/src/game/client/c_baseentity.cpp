@@ -41,6 +41,11 @@
 #include "inetchannelinfo.h"
 #include "proto_version.h"
 
+#include "sharp/entity.h"
+#include "sharp/entitylistner.h"
+#include "sharp/c_sharp_dt.h"
+ 
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -431,6 +436,7 @@ END_RECV_TABLE()
 
 BEGIN_RECV_TABLE_NOBASE(C_BaseEntity, DT_BaseEntity)
 	RecvPropDataTable( "AnimTimeMustBeFirst", 0, 0, &REFERENCE_RECV_TABLE(DT_AnimTimeMustBeFirst) ),
+	RecvPropSharp(),
 	RecvPropInt( RECVINFO(m_flSimulationTime), 0, RecvProxy_SimulationTime ),
 	RecvPropInt( RECVINFO( m_ubInterpolationFrame ) ),
 
@@ -979,6 +985,13 @@ C_BaseEntity::~C_BaseEntity()
 #endif
 	RemoveFromInterpolationList();
 	RemoveFromTeleportList();
+
+	if( MonoHandle.IsValid() ){
+		EntityMonoObject* monoObject = (EntityMonoObject*) GetSharpEntity();
+
+		monoObject->entity = NULL;
+		MonoHandle.Release();
+	}
 }
 
 void C_BaseEntity::Clear( void )
@@ -1421,7 +1434,7 @@ bool C_BaseEntity::ShouldDraw()
 	if ( m_nRenderMode == kRenderNone )
 		return false;
 
-	return (model != 0) && !IsEffectActive(EF_NODRAW) && (index != 0);
+	return (model != 0) && !IsEffectActive(EF_NODRAW) && (index != 0) && g_SharpEntity->ShouldDraw( this );
 }
 
 bool C_BaseEntity::TestCollision( const Ray_t& ray, unsigned int mask, trace_t& trace )
@@ -3274,6 +3287,15 @@ void C_BaseEntity::OnDataChanged( DataUpdateType_t type )
 	if ( type == DATA_UPDATE_CREATED )
 	{
 		UpdateVisibility();
+	}
+
+	if ( type == DATA_UPDATE_CREATED )
+	{
+		//Late create the entity.
+		if( !MonoHandle.IsValid() )
+			g_SharpEntityListener->OnEntityCreated( this );
+
+		g_SharpEntity->FireSpawn( this );
 	}
 }
 

@@ -25,6 +25,7 @@
 #include "c_env_fog_controller.h"
 #include "igameevents.h"
 #include "GameEventListener.h"
+#include "sharp/entity.h"
 
 #if defined USES_ECON_ITEMS
 #include "econ_item.h"
@@ -78,6 +79,8 @@ public:
 
 	C_BasePlayer();
 	virtual			~C_BasePlayer();
+
+	virtual SharpClass GetMonoClass(){ return g_SharpEntity->m_mPlayerClass; }
 
 	virtual void	Spawn( void );
 	virtual void	SharedSpawn(); // Shared between client and server.

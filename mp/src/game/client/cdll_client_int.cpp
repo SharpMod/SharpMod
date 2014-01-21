@@ -125,6 +125,10 @@
 #include "client_virtualreality.h"
 #include "mumble.h"
 
+#include "sharp/sharp.h"
+#include "sharp/sharp_usermessage.h"
+#include "sharp/sharp_game.h"
+
 // NVNT includes
 #include "hud_macros.h"
 #include "haptics/ihaptics.h"
@@ -929,6 +933,8 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 		return false;
 #endif
 
+	g_Sharp.Setup();
+
 #if defined( REPLAY_ENABLED )
 	if ( IsPC() && (g_pEngineReplay = (IEngineReplay *)appSystemFactory( ENGINE_REPLAY_INTERFACE_VERSION, NULL )) == NULL )
 		return false;
@@ -1593,6 +1599,8 @@ void CHLClient::LevelInitPreEntity( char const* pMapName )
 
 	IGameSystem::LevelInitPreEntityAllSystems(pMapName);
 
+	g_Sharp.Initialize();
+
 #ifdef USES_ECON_ITEMS
 	GameItemSchema_t *pItemSchema = ItemSystem()->GetItemSchema();
 	if ( pItemSchema )
@@ -1685,6 +1693,8 @@ void CHLClient::LevelShutdown( void )
 	IGameSystem::LevelShutdownPreEntityAllSystems();
 
 	C_PhysPropClientside::DestroyAll();
+
+	g_Sharp.Shutdown();
 
 	modemanager->LevelShutdown();
 
@@ -1950,7 +1960,7 @@ void CHLClient::UncacheAllMaterials( )
 //-----------------------------------------------------------------------------
 bool CHLClient::DispatchUserMessage( int msg_type, bf_read &msg_data )
 {
-	return usermessages->DispatchUserMessage( msg_type, msg_data );
+	return usermessages->DispatchUserMessage( msg_type, msg_data ) || g_sharpUserMessage.DispatchUserMessage( msg_type, msg_data );
 }
 
 
@@ -2189,6 +2199,9 @@ void OnRenderStart()
 		VPROF_BUDGET( "ParticleMgr()->Simulate", VPROF_BUDGETGROUP_PARTICLE_SIMULATION );
 		ParticleMgr()->Simulate( gpGlobals->frametime );
 	}
+
+	if( g_Sharp.ValidDomain() )
+		g_SharpGame->GameThink();
 
 	// Now that the view model's position is setup and aiments are marked dirty, update
 	// their positions so they're in the leaf system correctly.

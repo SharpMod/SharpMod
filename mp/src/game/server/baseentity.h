@@ -20,6 +20,8 @@
 #include "ServerNetworkProperty.h"
 #include "shareddefs.h"
 #include "engine/ivmodelinfo.h"
+#include "sharp/sharphelper.h"
+#include "sharp/sharp_dt.h"
 
 class CDamageModifier;
 class CDmgAccumulator;
@@ -388,6 +390,14 @@ public:
 
 	// Class factory
 	static CBaseEntity				*CreatePredictedEntityByName( const char *classname, const char *module, int line, bool persist = false );
+
+//Mono/Sharp specific calls/Creating the instance
+public:
+	virtual SharpClass GetMonoClass();
+	//TODO (Nican): Get better place to store these
+	SharpHandle	MonoHandle;
+	MonoObject* GetSharpEntity( void ) const;
+	EntitySharpDT m_sharpDT;
 
 // IHandleEntity overrides.
 public:
@@ -943,6 +953,7 @@ public:
 	virtual	bool	IsPlayer( void ) const { return false; }
 	virtual bool	IsNetClient( void ) const { return false; }
 	virtual bool	IsTemplate( void ) { return false; }
+	virtual	bool	IsSharpEntity( void ) const { return false; }
 	virtual bool	IsBaseObject( void ) const { return false; }
 	virtual bool	IsBaseTrain( void ) const { return false; }
 	bool			IsBSPModel() const;
@@ -1590,8 +1601,9 @@ protected:
 private:
 	int		m_iEFlags;	// entity flags EFL_*
 	// was pev->flags
+public:
 	CNetworkVarForDerived( int, m_fFlags );
-
+private:
 	string_t m_iName;	// name used to identify this entity
 
 	// Damage modifiers

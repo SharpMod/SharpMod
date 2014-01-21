@@ -97,6 +97,22 @@ bool CheckEmitReasonablePhysicsSpew()
 	return true;
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: Sharp methods
+//-----------------------------------------------------------------------------
+
+#include "sharp/sharp.h"
+#include "sharp/entity.h"
+
+SharpClass CBaseEntity::GetMonoClass(){
+	return g_SharpEntity->m_mEntityClass;
+}
+
+MonoObject* CBaseEntity::GetSharpEntity( void ) const
+{
+	return MonoHandle.GetObject().m_monoObject;
+}
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Spawn some blood particles
@@ -490,6 +506,9 @@ bool CBaseEntity::KeyValue( const char *szKeyName, const char *szValue )
 	}
 
 #endif
+
+	if( g_SharpEntity->FireKeyValue( this, szKeyName, szValue ) )
+		return true;
 
 	// key hasn't been handled
 	return false;

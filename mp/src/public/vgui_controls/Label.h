@@ -184,8 +184,9 @@ protected:
 
 private:
 	void Init();
-
+public:
 	Alignment  _contentAlignment;
+private:
 	TextImage *_textImage; // this is the textImage, if the full text will not
 							// fit we put as much as we can and add an elipsis (...)
 	struct TImageInfo

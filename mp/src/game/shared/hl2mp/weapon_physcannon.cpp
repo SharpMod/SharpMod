@@ -1065,6 +1065,8 @@ private:
 #define CWeaponPhysCannon C_WeaponPhysCannon
 #endif
 
+SharpClassReference PhysCannonClassReference("Sharp", "PhysCannon");
+
 class CWeaponPhysCannon : public CBaseHL2MPCombatWeapon
 {
 public:
@@ -1095,6 +1097,10 @@ public:
 	bool	Deploy( void );
 
 	bool	HasAnyAmmo( void ) { return true; }
+
+	virtual SharpClass GetMonoClass() override { 
+		return SharpClass(PhysCannonClassReference.Get());
+	};
 
 	virtual void SetViewModel( void );
 	virtual const char *GetShootSound( int iIndex ) const;
@@ -1322,6 +1328,27 @@ enum
 	EFFECT_HOLDING,
 	EFFECT_LAUNCH,
 };
+
+static void SharpPhysCannonForceDrop(MonoObject* methods, EntityMonoObject *monoEntity)
+{
+	ASSERT_DOMAIN();
+	CWeaponPhysCannon* entity = dynamic_cast<CWeaponPhysCannon*>(monoEntity->GetEntity());
+	entity->ForceDrop();
+}
+static SharpMethodItem SharpPhysCannonForceDropItem("Sharp."MONO_CLASS"Entity::ForceDrop", SharpPhysCannonForceDrop );
+
+static MonoObject* SharpPhysCannonGetAttached(MonoObject* methods, EntityMonoObject *monoEntity)
+{
+	ASSERT_DOMAIN();
+	CWeaponPhysCannon* entity = dynamic_cast<CWeaponPhysCannon*>(monoEntity->GetEntity());
+	CBaseEntity* attached = entity->m_hAttachedObject;
+	if(attached == nullptr)
+		return nullptr;
+
+	return attached->GetSharpEntity();
+}
+static SharpMethodItem SharpPhysCannonGetAttachedItem("Sharp."MONO_CLASS"Entity::GetAttached", SharpPhysCannonGetAttached );
+
 
 //-----------------------------------------------------------------------------
 // Constructor
@@ -1615,6 +1642,7 @@ void CWeaponPhysCannon::PuntNonVPhysics( CBaseEntity *pEntity, const Vector &for
 
 
 #ifndef CLIENT_DLL
+static SharpMethodReference physCannonPickupMethodRef("Sharp", "PhysCannon", "OnPickup", 3);
 //-----------------------------------------------------------------------------
 // What happens when the physgun picks up something 
 //-----------------------------------------------------------------------------
@@ -1628,6 +1656,15 @@ void CWeaponPhysCannon::Physgun_OnPhysGunPickup( CBaseEntity *pEntity, CBasePlay
 	}
 
 	Pickup_OnPhysGunPickup( pEntity, pOwner, reason );
+
+	void* params[3] = {
+		pOwner->GetSharpEntity(),
+		pEntity->GetSharpEntity(),
+		&reason
+	};
+
+	MonoMethod* method = physCannonPickupMethodRef.Get();
+	sharp_safe_invoke(method, GetSharpEntity(), params);
 }
 #endif
 
@@ -2367,6 +2404,7 @@ void CWeaponPhysCannon::UpdateObject( void )
 	}
 }
 
+static SharpMethodReference physCannonDropMethodRef("Sharp", "PhysCannon", "OnDrop", 3);
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CWeaponPhysCannon::DetachObject( bool playSound, bool wasLaunched )
@@ -2388,7 +2426,18 @@ void CWeaponPhysCannon::DetachObject( bool playSound, bool wasLaunched )
 
 	if ( pObject != NULL )
 	{
-		Pickup_OnPhysGunDrop( pObject, pOwner, wasLaunched ? LAUNCHED_BY_CANNON : DROPPED_BY_CANNON );
+		//Pickup_OnPhysGunDrop( pObject, pOwner, wasLaunched ? LAUNCHED_BY_CANNON : DROPPED_BY_CANNON );
+		PhysGunDrop_t Reason = wasLaunched ? LAUNCHED_BY_CANNON : DROPPED_BY_CANNON;
+		Pickup_OnPhysGunDrop( pObject, pOwner, Reason );
+
+		void* params[3] = {
+			pOwner->GetSharpEntity(),
+			pObject->GetSharpEntity(),
+			&Reason
+		};
+
+		MonoMethod* method = physCannonDropMethodRef.Get();
+		sharp_safe_invoke(method, GetSharpEntity(), params);
 	}
 
 	// Stop our looping sound
@@ -2768,6 +2817,7 @@ void CWeaponPhysCannon::LaunchObject( const Vector &vecDir, float flForce )
 
 bool UTIL_IsCombineBall( CBaseEntity *pEntity );
 
+static SharpMethodReference physCannonCanPickupObjectMethodRef("Sharp", "PhysCannon", "CanPickup", 3);
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : *pTarget - 
@@ -2803,7 +2853,19 @@ bool CWeaponPhysCannon::CanPickupObject( CBaseEntity *pTarget )
 		return CBasePlayer::CanPickupObject( pTarget, 0, 0 );
 	}
 
-	return CBasePlayer::CanPickupObject( pTarget, physcannon_maxmass.GetFloat(), 0 );
+	//return CBasePlayer::CanPickupObject( pTarget, physcannon_maxmass.GetFloat(), 0 );
+	float maxMass = physcannon_maxmass.GetFloat();
+	void* vars[3] = {
+		GetOwner()->GetSharpEntity(),
+		pTarget->GetSharpEntity(),
+		&maxMass
+	};
+	MonoObject* retn;
+
+	if( !sharp_safe_invoke(physCannonCanPickupObjectMethodRef.Get(), GetSharpEntity(), vars, &retn ) )
+		return CBasePlayer::CanPickupObject( pTarget, maxMass, 0 );
+
+	return *((bool*)mono_object_unbox(retn));
 #else
 	return false;
 #endif

@@ -35,6 +35,7 @@
 #include "datacache/imdlcache.h"
 #include "basemultiplayerplayer.h"
 #include "voice_gamemgr.h"
+#include "sharp/concommand.h"
 
 #ifdef TF_DLL
 #include "tf_player.h"
@@ -1519,7 +1520,7 @@ void ClientCommand( CBasePlayer *pPlayer, const CCommand &args )
 	}
 	else 
 	{
-		if ( !g_pGameRules->ClientCommand( pPlayer, args ) )
+		if ( !g_pGameRules->ClientCommand( pPlayer, args ) && !g_sharpCommand->ClientCommand( pPlayer, args ) )
 		{
 			if ( Q_strlen( pCmd ) > 128 )
 			{

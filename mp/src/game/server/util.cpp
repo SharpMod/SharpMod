@@ -36,6 +36,8 @@
 #include "datacache/imdlcache.h"
 #include "util.h"
 #include "cdll_int.h"
+#include "sharp/entitylistner.h"
+#include "sharp/sharp_native_entity.h"
 
 #ifdef PORTAL
 #include "PortalSimulation.h"
@@ -161,6 +163,14 @@ IServerNetworkable *CEntityFactoryDictionary::Create( const char *pClassName )
 	IEntityFactory *pFactory = FindFactory( pClassName );
 	if ( !pFactory )
 	{
+		CBaseEntity* entity = g_SharpEntityListener->Create( pClassName );
+		if( entity != nullptr )
+			return entity->NetworkProp();
+
+		entity = g_nativeDT.CreateEntity( pClassName );
+		if( entity != nullptr )
+			return entity->NetworkProp();
+
 		Warning("Attempted to create unknown entity type %s!\n", pClassName );
 		return NULL;
 	}
@@ -1949,6 +1959,15 @@ int DispatchSpawn( CBaseEntity *pEntity )
 
 	return 0;
 }
+
+int SharpDispatchSpawn( EntityMonoObject* monoEntity )
+{
+	ASSERT_DOMAIN();
+	
+	CBaseEntity* entity = monoEntity->GetEntity();
+	return DispatchSpawn(entity);
+}
+SharpMethodItem SharpDispatchSpawnItem("Sharp.Game::DispatchSpawn", SharpDispatchSpawn );
 
 // UNDONE: This could be a better test - can we run the absbox through the bsp and see
 // if it contains any solid space?  or would that eliminate some entities we want to keep?

@@ -7,6 +7,7 @@
 
 #include "cbase.h"
 #include "movevars_shared.h"
+#include "sharp/sharp_game.h"
 #include "util_shared.h"
 #include "datacache/imdlcache.h"
 #if defined ( TF_DLL ) || defined ( TF_CLIENT_DLL )
@@ -1020,29 +1021,57 @@ void CBasePlayer::SelectItem( const char *pstr, int iSubType )
 	if (!pstr)
 		return;
 
+	UPDATE_DOMAIN();
+	static SharpMethodReference selectItemMethodRef("Sharp", "Player", "SelectItem", 2);
+
 	CBaseCombatWeapon *pItem = Weapon_OwnsThisType( pstr, iSubType );
+	MonoObject* sharpEntity = GetSharpEntity();
+	MonoMethod* selectMethod = selectItemMethodRef.GetVirtual(sharpEntity);
+	MonoString* monoStr = mono_string_new(g_Sharp.GetDomain(), pstr);
 
-	if (!pItem)
-		return;
+	void* vars[2] = { monoStr, &iSubType };
 
-	if( GetObserverMode() != OBS_MODE_NONE )
-		return;// Observers can't select things.
-
-	if ( !Weapon_ShouldSelectItem( pItem ) )
-		return;
-
-	// FIX, this needs to queue them up and delay
-	// Make sure the current weapon can be holstered
-	if ( GetActiveWeapon() )
-	{
-		if ( !GetActiveWeapon()->CanHolster() )
-			return;
-
-		ResetAutoaim( );
-	}
-
-	Weapon_Switch( pItem );
+	sharp_safe_invoke(selectMethod, sharpEntity, vars );
 }
+
+
+static void BasePlayerSelectItem(MonoObject* methods, EntityMonoObject *monoEntity, MonoString* wepName, int iSubType)
+{
+	ASSERT_DOMAIN();
+
+	if(wepName == nullptr)
+		mono_raise_exception( mono_get_exception_argument_null("wepName") );
+
+	CBasePlayer* player = monoEntity->GetPlayer();
+	char* pstr = mono_string_to_utf8( wepName );
+
+	//player->SelectItem(pstr, iSubType);
+	CBaseCombatWeapon *pItem = player->Weapon_OwnsThisType( pstr, iSubType );
+	mono_free(pstr);
+ 
+ 	if (!pItem)
+ 		return;
+ 
+	if( player->GetObserverMode() != OBS_MODE_NONE )
+ 		return;// Observers can't select things.
+
+	if ( !player->Weapon_ShouldSelectItem( pItem ) )
+ 		return;
+ 
+ 	// FIX, this needs to queue them up and delay
+ 	// Make sure the current weapon can be holstered
+
+	if ( player->GetActiveWeapon() )
+ 	{
+		if ( !player->GetActiveWeapon()->CanHolster() )
+			return;
+ 
+		player->ResetAutoaim( );
+ 	}
+ 
+	player->Weapon_Switch( pItem );
+}
+static SharpMethodItem methodSelectItem("Sharp."MONO_CLASS"Player::SelectItem", BasePlayerSelectItem );
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -1638,6 +1667,8 @@ void CBasePlayer::CalcPlayerView( Vector& eyeOrigin, QAngle& eyeAngles, float& f
 
 	// calc current FOV
 	fov = GetFOV();
+
+	g_SharpGame->CalcPlayerView( this, eyeOrigin, eyeAngles, fov );
 }
 
 //-----------------------------------------------------------------------------

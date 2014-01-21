@@ -68,13 +68,45 @@ $Configuration
 		$SystemFrameworks				"Carbon" [$OSXALL]
 		$SystemLibraries				"rt" [$LINUXALL]
 		$IgnoreImportLibrary			"TRUE"
-		$AdditionalDependencies			"$BASE winmm.lib"	[$WIN32]
+		$AdditionalDependencies			"$BASE winmm.lib mono-2.0.lib"	[$WIN32]
 		$AdditionalDependencies			"$BASE wsock32.lib Ws2_32.lib" [$BUILD_REPLAY]
 	}
 }
 
 $Project
 {
+	$Folder "Sharp"
+	{
+		$File	"$SRCDIR\game\client\sharp\c_sharp_dt.cpp"
+		$File	"$SRCDIR\game\client\sharp\c_sharp_dt.h"
+		$File	"$SRCDIR\game\client\sharp\c_sharp_entity.cpp"
+		$File	"$SRCDIR\game\client\sharp\c_sharp_entity.h"
+		$File	"$SRCDIR\game\client\sharp\c_sharp_mesh.cpp"
+		$File	"$SRCDIR\game\client\sharp\c_sharp_panel.cpp"
+		$File	"$SRCDIR\game\client\sharp\c_sharp_renderable.cpp"
+		
+		$File	"$SRCDIR\game\shared\sharp\concommand.cpp"
+		$File	"$SRCDIR\game\shared\sharp\concommand.h"
+		$File	"$SRCDIR\game\shared\sharp\entity.cpp"
+		$File	"$SRCDIR\game\shared\sharp\entity.h"
+		$File	"$SRCDIR\game\shared\sharp\entitylistner.cpp"
+		$File	"$SRCDIR\game\shared\sharp\entitylistner.h"
+		$File	"$SRCDIR\game\shared\sharp\sharp.cpp"
+		$File	"$SRCDIR\game\shared\sharp\sharp.h"
+		$File	"$SRCDIR\game\shared\sharp\sharp_engine.cpp"
+		$File	"$SRCDIR\game\shared\sharp\sharp_game.cpp"
+		$File	"$SRCDIR\game\shared\sharp\sharp_game.h"
+		$File	"$SRCDIR\game\shared\sharp\sharp_math.cpp"
+		$File	"$SRCDIR\game\shared\sharp\sharp_native_entity.cpp"
+		$File	"$SRCDIR\game\shared\sharp\sharp_native_entity.h"
+		$File	"$SRCDIR\game\shared\sharp\sharp_trace.cpp"
+		$File	"$SRCDIR\game\shared\sharp\sharp_usermessage.cpp"
+		$File	"$SRCDIR\game\shared\sharp\sharp_usermessage.h"
+		$File	"$SRCDIR\game\shared\sharp\sharphelper.cpp"
+		$File	"$SRCDIR\game\shared\sharp\sharphelper.h"
+		$File	"$SRCDIR\game\shared\sharp\writer.cpp"
+	}
+
 	$Folder "Replay"
 	{
 		$File	"replay/replaycamera.cpp"

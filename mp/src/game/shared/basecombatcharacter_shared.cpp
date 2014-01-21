@@ -140,6 +140,16 @@ void CBaseCombatCharacter::RemoveAllAmmo( )
 	}
 }
 
+static void CBaseCombatCharacterRemoveAllAmmo(MonoObject* methods, EntityMonoObject *monoEntity)
+{
+	ASSERT_DOMAIN();
+
+	CBasePlayer* player = monoEntity->GetPlayer();
+	player->RemoveAllAmmo();
+}
+SharpMethodItem SharpCBaseCombatCharacterRemoveAllAmmo("Sharp."MONO_CLASS"Player::RemoveAllAmmo", CBaseCombatCharacterRemoveAllAmmo );
+
+
 //-----------------------------------------------------------------------------
 // FIXME: This is a sort of hack back-door only used by physgun!
 //-----------------------------------------------------------------------------
@@ -174,6 +184,22 @@ int	CBaseCombatCharacter::GetAmmoCount( char *szName ) const
 {
 	return GetAmmoCount( GetAmmoDef()->Index(szName) );
 }
+
+static int CBaseCombatCharacterGetAmmoCount(MonoObject* methods, EntityMonoObject *monoEntity, MonoString* szName )
+{
+	ASSERT_DOMAIN();
+
+	if(szName == nullptr)
+		mono_raise_exception( mono_get_exception_argument_null("szName") );
+
+
+	CBasePlayer* player = monoEntity->GetPlayer();
+	char* pstr = mono_string_to_utf8( szName );
+	int count = player->GetAmmoCount(pstr);
+	mono_free(pstr);
+	return count;
+}
+static SharpMethodItem SharpCBaseCombatCharacterGetAmmoCount("Sharp."MONO_CLASS"Player::GetAmmo", CBaseCombatCharacterGetAmmoCount );
 
 //-----------------------------------------------------------------------------
 // Purpose: Returns weapon if already owns a weapon of this class

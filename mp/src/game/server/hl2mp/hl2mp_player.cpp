@@ -161,6 +161,7 @@ void CHL2MP_Player::GiveAllItems( void )
 {
 	EquipSuit();
 
+	/*
 	CBasePlayer::GiveAmmo( 255,	"Pistol");
 	CBasePlayer::GiveAmmo( 255,	"AR2" );
 	CBasePlayer::GiveAmmo( 5,	"AR2AltFire" );
@@ -191,13 +192,14 @@ void CHL2MP_Player::GiveAllItems( void )
 	GiveNamedItem( "weapon_slam" );
 
 	GiveNamedItem( "weapon_physcannon" );
-	
+	*/	
 }
 
 void CHL2MP_Player::GiveDefaultItems( void )
 {
 	EquipSuit();
 
+	/*
 	CBasePlayer::GiveAmmo( 255,	"Pistol");
 	CBasePlayer::GiveAmmo( 45,	"SMG1");
 	CBasePlayer::GiveAmmo( 1,	"grenade" );
@@ -217,6 +219,7 @@ void CHL2MP_Player::GiveDefaultItems( void )
 	GiveNamedItem( "weapon_smg1" );
 	GiveNamedItem( "weapon_frag" );
 	GiveNamedItem( "weapon_physcannon" );
+	*/
 
 	const char *szDefaultWeaponName = engine->GetClientConVarValue( engine->IndexOfEdict( edict() ), "cl_defaultweapon" );
 
@@ -287,10 +290,15 @@ void CHL2MP_Player::PickDefaultSpawnTeam( void )
 //-----------------------------------------------------------------------------
 void CHL2MP_Player::Spawn(void)
 {
-	m_flNextModelChangeTime = 0.0f;
-	m_flNextTeamChangeTime = 0.0f;
+	//m_flNextModelChangeTime = 0.0f;
+	//m_flNextTeamChangeTime = 0.0f;
 
-	PickDefaultSpawnTeam();
+	//PickDefaultSpawnTeam();
+	char szReturnString[512];
+	Q_snprintf( szReturnString, sizeof (szReturnString ), "cl_playermodel models/combine_soldier.mdl\n" );
+	engine->ClientCommand ( edict(), szReturnString );
+
+	SetPlayerModel();
 
 	BaseClass::Spawn();
 	
@@ -311,18 +319,9 @@ void CHL2MP_Player::Spawn(void)
 
 	m_Local.m_iHideHUD = 0;
 	
-	AddFlag(FL_ONGROUND); // set the player on the ground at the start of the round.
+	//AddFlag(FL_ONGROUND); // set the player on the ground at the start of the round.
 
 	m_impactEnergyScale = HL2MPPLAYER_PHYSDAMAGE_SCALE;
-
-	if ( HL2MPRules()->IsIntermission() )
-	{
-		AddFlag( FL_FROZEN );
-	}
-	else
-	{
-		RemoveFlag( FL_FROZEN );
-	}
 
 	m_iSpawnInterpCounter = (m_iSpawnInterpCounter + 1) % 8;
 

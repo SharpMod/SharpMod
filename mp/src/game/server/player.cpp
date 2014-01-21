@@ -70,6 +70,8 @@
 #include "vote_controller.h"
 #include "ai_speech.h"
 
+#include "sharp/entity.h"
+
 #if defined USES_ECON_ITEMS
 #include "econ_wearable.h"
 #endif
@@ -2858,6 +2860,16 @@ bool CBasePlayer::CanPickupObject( CBaseEntity *pObject, float massLimit, float 
 #endif
 }
 
+static bool SharpBasePlayerCanPickupObject(MonoObject* methods, EntityMonoObject *monoEntity, EntityMonoObject *object, float massLimit, float sizeLimit )
+{
+	ASSERT_DOMAIN();
+	CBasePlayer* player = monoEntity->GetPlayer();
+	CBaseEntity* obj = object->GetEntity();
+	return player->CanPickupObject( obj, massLimit, sizeLimit );
+}
+static SharpMethodItem SharpBasePlayerCanPickupObjectItem("Sharp.ServerPlayer::CanPickupObject", SharpBasePlayerCanPickupObject );
+
+
 float CBasePlayer::GetHeldObjectMass( IPhysicsObject *pHeldObject )
 {
 	return 0;
@@ -4873,6 +4885,8 @@ void CBasePlayer::InitialSpawn( void )
 {
 	m_iConnected = PlayerConnected;
 	gamestats->Event_PlayerConnected( this );
+
+	g_SharpEntity->FireInitialSpawn( this );
 }
 
 //-----------------------------------------------------------------------------
@@ -4947,7 +4961,8 @@ void CBasePlayer::Spawn( void )
 	if ( !m_fGameHUDInitialized )
 		g_pGameRules->SetDefaultPlayerTeam( this );
 
-	g_pGameRules->GetPlayerSpawnSpot( this );
+	//NICAN: Removed spawn from game, SharpMod are handling this now
+	//g_pGameRules->GetPlayerSpawnSpot( this );
 
 	m_Local.m_bDucked = false;// This will persist over round restart if you hold duck otherwise. 
 	m_Local.m_bDucking = false;

@@ -18,6 +18,7 @@
 #include "hintsystem.h"
 #include "SoundEmitterSystem/isoundemittersystembase.h"
 #include "util_shared.h"
+#include "sharp/entity.h"
 
 #if defined USES_ECON_ITEMS
 #include "game_item_schema.h"
@@ -248,6 +249,8 @@ public:
 	
 	CBasePlayer();
 	~CBasePlayer();
+
+	virtual SharpClass GetMonoClass(){ return g_SharpEntity->m_mPlayerClass; };
 
 	// IPlayerInfo passthrough (because we can't do multiple inheritance)
 	IPlayerInfo *GetPlayerInfo() { return &m_PlayerInfo; }
