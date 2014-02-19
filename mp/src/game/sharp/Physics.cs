@@ -349,60 +349,68 @@ namespace Sharp
 
         public void PlayImpactSounds()
         {
-
-            foreach (impactsound_t sound in list)
+            try
             {
-                surfacedata_t psurf = Physics.SurfaceProps.GetSurfaceData(sound.surfaceProps);
-                if (psurf.sounds.impactHard == 0)
-                    continue;
-
-                surfacedata_t pHit = Physics.SurfaceProps.GetSurfaceData(sound.surfacePropsHit);
-                ushort soundName = psurf.sounds.impactHard;
-                if (pHit != null && psurf.sounds.impactSoft != 0)
+                foreach (impactsound_t sound in list)
                 {
-                    if (pHit.audio.hardnessFactor < psurf.audio.hardThreshold ||
-                        (psurf.audio.hardVelocityThreshold > 0 && psurf.audio.hardVelocityThreshold > sound.impactSpeed))
+                    surfacedata_t psurf = Physics.SurfaceProps.GetSurfaceData(sound.surfaceProps);
+                    if (psurf.sounds.impactHard == 0)
+                        continue;
+
+                    surfacedata_t pHit = Physics.SurfaceProps.GetSurfaceData(sound.surfacePropsHit);
+                    ushort soundName = psurf.sounds.impactHard;
+                    if (pHit != null && psurf.sounds.impactSoft != 0)
                     {
-                        soundName = psurf.sounds.impactSoft;
+                        if (pHit.audio.hardnessFactor < psurf.audio.hardThreshold ||
+                            (psurf.audio.hardVelocityThreshold > 0 && psurf.audio.hardVelocityThreshold > sound.impactSpeed))
+                        {
+                            soundName = psurf.sounds.impactSoft;
+                        }
                     }
+
+                    string pSound = Physics.SurfaceProps.GetString(soundName);
+
+                    CSoundParameters parms = Physics.SoundEmitterBase.GetParametersForSound(pSound, Physics.SoundEmitterBase.GetActorGender(null));
+                    if (parms == null)
+                        break;
+
+                    float volume = Math.Min(sound.volume, 1.0f);
+
+                    CPASAttenuationFilter filter = new CPASAttenuationFilter(sound.origin, parms.soundlevel);
+
+                    EmitSound ep = new EmitSound();
+                    ep.Channel = sound.soundChannel;
+                    ep.SoundName = parms.soundname;
+                    ep.Volume = parms.volume * volume;
+                    ep.SoundLevel = parms.soundlevel;
+                    ep.Pitch = parms.pitch;
+                    ep.Origin = sound.origin;
+
+                    Entity.EmitSound(filter, 0, ep);
+                    /*
+                    Engine.Sound.EmitSound(
+                        filter,
+                        0,
+                        (AudioChannel)sound.soundChannel,
+                        parms.soundname,
+                        parms.volume * sound.volume,
+                        parms.soundlevel,
+                        0,
+                        parms.pitch,
+                        sound.origin);
+                     * */
+
                 }
 
-                string pSound = Physics.SurfaceProps.GetString(soundName);
-
-                CSoundParameters parms = Physics.SoundEmitterBase.GetParametersForSound(pSound, Physics.SoundEmitterBase.GetActorGender(null));
-                if (parms == null)
-                    break;
-
-                float volume = Math.Min(sound.volume, 1.0f);
-
-                CPASAttenuationFilter filter = new CPASAttenuationFilter(sound.origin, parms.soundlevel);
-
-                EmitSound ep = new EmitSound();
-                ep.Channel = sound.soundChannel;
-                ep.SoundName = parms.soundname;
-                ep.Volume = parms.volume * volume;
-                ep.SoundLevel = parms.soundlevel;
-                ep.Pitch = parms.pitch;
-                ep.Origin = sound.origin;
-
-                Entity.EmitSound(filter, 0, ep);
-                /*
-                Engine.Sound.EmitSound(
-                    filter,
-                    0,
-                    (AudioChannel)sound.soundChannel,
-                    parms.soundname,
-                    parms.volume * sound.volume,
-                    parms.soundlevel,
-                    0,
-                    parms.pitch,
-                    sound.origin);
-                 * */
-
             }
-
-
-            list.Clear();
+            catch (Exception e)
+            {
+                throw e;
+            }
+            finally
+            {
+                list.Clear();
+            }
         }
 
         public void AddImpactSound(int entityIndex, int soundChannel, IPhysicsObject pObject, int surfaceProps, int surfacePropsHit, float volume, float impactSpeed)

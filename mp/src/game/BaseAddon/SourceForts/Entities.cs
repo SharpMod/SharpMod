@@ -193,11 +193,6 @@ namespace SourceForts
         }
     }
 
-    [Entity("func_nofreeze")]
-    public class EntityFuncNoFreeze : FuncBrush
-    {
-    }
-
     [Entity("game_phase_control")]
     public class GamePhaseControl : BaseAnimating
     {
@@ -290,9 +285,35 @@ namespace SourceForts
         }
     }
 
-    [Entity("func_flagzone")]
+    [Entity("func_nofreeze")]
+    public class EntityFuncNoFreeze : FuncBrush
+    {
+        protected override void Initialize()
+        {
+            base.Initialize();
+
+            this.Solid = SolidType.NONE;
+            this.SolidFlags = Sharp.SolidFlags.NotSolid; 
+        }
+
+        public override void StartTouch(Entity other)
+        {
+            Console.WriteLine("EntityFuncNoFreeze {0}", other);
+        }
+    }
+
+
+    //[Entity("func_flagzone")]
     public class EntityFlagZone : FuncBrush
     {
+        protected override void Initialize()
+        {
+            base.Initialize();
+
+            this.Solid = SolidType.NONE;
+            this.SolidFlags = Sharp.SolidFlags.NotSolid; 
+        }
+
         public override void StartTouch(Entity other)
         {
             if (other is Player)

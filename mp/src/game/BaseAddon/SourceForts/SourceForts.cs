@@ -146,13 +146,7 @@ namespace SourceForts
                 player.Armor = plyClass.StartArmor;
 
                 //TODO: Set Model
-            }
-
-            foreach (GamePhaseControl control in Game.GetEntities().OfType<GamePhaseControl>())
-            {
-                control.FireGameStateChange(State);
-            }
-            
+            }            
         }
 
         public override bool PhysCannonCanPickupObject(Player player, Entity other, float maxMass)

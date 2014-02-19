@@ -214,10 +214,6 @@ public:
 		return _contentAlignment;
 	}
 
-	//virtual void ApplySchemeSettings(vgui::IScheme *pScheme)
-	//{
-	//}
-
 };
 
 class SharpImagePanel : public SharpTemplatePanel<vgui::ImagePanel>
