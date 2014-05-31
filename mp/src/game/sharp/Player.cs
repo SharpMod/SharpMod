@@ -387,7 +387,7 @@ namespace Sharp
             Flags &= ~EntityFlags.Frozen;
 
             //The internal implementation of setting the player position is removed and must be set manually
-            if (Sharp.SERVER && Game.Gamemode != null)
+            if (Game.Gamemode != null)
             {
                 Game.Gamemode.PlayerSpawn(this);
             }

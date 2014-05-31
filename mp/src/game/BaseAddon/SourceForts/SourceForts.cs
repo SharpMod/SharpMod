@@ -17,6 +17,8 @@ namespace SourceForts
 
     public enum Teams
     {
+        Unassigned = 0,
+        Spectator = 1,
         Blue = 2,
         Red = 3
     }
@@ -35,7 +37,7 @@ namespace SourceForts
     {
     }
 
-    public class SourceForts : Gamemode
+    public class SourceFortsMod : Gamemode
     {
         public static readonly ConVar sf_class = new ConVar("sf_class", "Scout", "Default class when joining a game", CommandFlags.USERINFO | CommandFlags.ARCHIVE);
         public static readonly ConVar GameStateVar = new ConVar("sf_gamestate", "0", "", CommandFlags.REPLICATED);
@@ -98,7 +100,7 @@ namespace SourceForts
 
         BaseTopInfoPanel TimeLeftPanel;
 
-        public SourceForts()
+        public SourceFortsMod()
         {
             //Reset the values
             GameStartTime.FloatValue = Game.CurTime;
@@ -117,6 +119,17 @@ namespace SourceForts
 
         public override void PlayerSpawn(Player player)
         {
+            if (Sharp.Sharp.CLIENT)
+            {
+                Console.WriteLine("Client player initial team: {0}", player.Team);
+
+                if (player.Team == (int) Teams.Unassigned)
+                {
+                    new TeamSelectGUI();
+                }
+                return;
+            }
+
             if (State == GameState.WAITING_PLAYERS)
                 StartBuild();
 
@@ -127,7 +140,9 @@ namespace SourceForts
             if (spawnPoint == null)
                 return;
 
-            player.Team = (int) Teams.Blue;
+            Console.WriteLine("Player initial team: {0}", player.Team);
+
+            player.Team = (int) Teams.Unassigned;
             player.Teleport(spawnPoint.Origin, null, Vector.Zero);
             player.Origin = spawnPoint.Origin + new Vector(0.0f, 0.0f, 1.0f);
 

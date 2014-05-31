@@ -2,6 +2,7 @@
 #include "sharp/sharp.h"
 #include <vgui_controls/Controls.h>
 #include <vgui_controls/Panel.h>
+#include <vgui_controls/Button.h>
 #include <vgui_controls/ImagePanel.h>
 #include <vgui/ISurface.h>
 #include <vgui_controls/Label.h>
@@ -35,6 +36,7 @@ public:
 	SharpMethod m_mouseWheeledMethod;
 	SharpMethod m_performLayout;
 	SharpMethod m_paintBackground;
+	SharpMethod m_onClick;
 };
 
 SharpPanelManager sharpPanel;
@@ -63,7 +65,7 @@ public:
 	SharpTemplatePanel(vgui::Panel *parent, const char *panelName) : T(parent, panelName){};
 	SharpTemplatePanel(vgui::Panel *parent, const char *panelName, const char *text) : T(parent, panelName, text){};
 
-	void InitMono( PanelMonoObject* object )
+	virtual void InitMono( PanelMonoObject* object )
 	{
 		//AssertMsg( object->Get() == NULL, "Error! Setting the panel twice for a mono panel.");
 		object->Set( this );
@@ -213,7 +215,6 @@ public:
 	vgui::Label::Alignment GetContentAlignment(){
 		return _contentAlignment;
 	}
-
 };
 
 class SharpImagePanel : public SharpTemplatePanel<vgui::ImagePanel>
@@ -222,9 +223,29 @@ public:
 	SharpImagePanel() : SharpTemplatePanel<vgui::ImagePanel>(g_pClientMode->GetViewport(), NULL)
 	{
 	}
+};
 
-	
+class SharpButtonPanel : public SharpTemplatePanel<vgui::Button>
+{
+public:
+	SharpMethod m_onClick;
 
+	SharpButtonPanel(char* input) : SharpTemplatePanel<vgui::Button>(g_pClientMode->GetViewport(), NULL, input)
+	{
+	}
+
+	virtual void InitMono( PanelMonoObject* object )
+	{
+		SharpTemplatePanel<vgui::Button>::InitMono(object);
+
+		SharpObject sharpObj( object );
+		m_onClick = sharpObj.GetVirtual( sharpPanel.m_paintMethod );
+	}
+
+	virtual void DoClick()
+	{
+		CallMethod(m_onClick);
+	}
 };
 
 
@@ -320,6 +341,9 @@ static void DrawTexturedPolygon(MonoArray* monoVertexes, bool ClipVertices )
 
 	int size = mono_array_length( monoVertexes );
 	vgui::Vertex_t* verticies = (vgui::Vertex_t*) stackalloc( sizeof(vgui::Vertex_t) * size );
+
+	if(verticies == nullptr)
+		mono_raise_exception (mono_get_exception_out_of_memory());
 
 	//One can be a smartass, and just dereference the first item, and pass that into DrawTexturedPolygon
 	//Take a look at: https://github.com/mono/mono/blob/ac653a9186b2724ee9f80f93a6b26005f7d79828/mono/metadata/object.c#L6538
@@ -692,6 +716,19 @@ static void SharpFontGetTextSize ( SharpFont *monoPanel, MonoString* monoStr, in
 	mono_free( input );
 };
 
+static void CreateButtonPanel ( PanelMonoObject *monoPanel, MonoString* str ) {
+	ASSERT_DOMAIN();
+
+	if (str == NULL)
+		mono_raise_exception (mono_get_exception_argument_null ("string"));
+
+	char* input = mono_string_to_utf8( str );
+	SharpButtonPanel* panel = new SharpButtonPanel( input );
+	panel->InitMono( monoPanel );
+	mono_free( input );		
+	panel->SizeToContents();
+};
+static SharpMethodItem SharpCtorButton("Sharp.Button::.ctor", CreateButtonPanel );
 
 SharpPanelManager::SharpPanelManager(){
 	SharpAddons()->AddAddon( this );
@@ -765,6 +802,8 @@ void SharpPanelManager::RegisterInternalCalls(){
 		mono_add_internal_call ("Sharp.Font::IsFontAdditive", SharpFontFontAdditive );
 		mono_add_internal_call ("Sharp.Font::GetTextSize", SharpFontGetTextSize );
 
+
+
 		
 };
 
@@ -782,6 +821,10 @@ void SharpPanelManager::UpdateMehods( MonoImage* image ){
 	m_mouseWheeledMethod = panelClass.GetMethod( "OnMouseWheeled", 1 );
 	m_performLayout = panelClass.GetMethod( "PerformLayout", 0 );
 	m_paintBackground = panelClass.GetMethod( "PaintBackground", 0 );
+
+	SharpClass buttonClass = mono_class_from_name( image, "Sharp", "Button");
+
+	m_onClick = buttonClass.GetMethod( "OnClick", 0 );
 
 };
 

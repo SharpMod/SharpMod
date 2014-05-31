@@ -50,6 +50,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SourceForts\Class.cs" />
     <Compile Include="SourceForts\Entities.cs" />
+    <Compile Include="SourceForts\GUI.cs" />
     <Compile Include="SourceForts\SourceForts.cs" />
   </ItemGroup>
   <ItemGroup>

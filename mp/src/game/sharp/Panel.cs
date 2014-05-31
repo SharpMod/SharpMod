@@ -406,6 +406,16 @@ namespace Sharp
 
     }
 
+    public class Button : Label
+    {
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern Button(string text);
+
+        public virtual void OnClick()
+        {
+        }
+    }
+
 	public class ImagePanel : Panel
 	{
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]

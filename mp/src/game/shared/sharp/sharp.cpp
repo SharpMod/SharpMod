@@ -93,7 +93,7 @@ determine_platform_image (const char *image_name)
 	}
 
 	Msg("Loading UNSAFE addon: %s\n", image_name );
-	return true;
+	return false;
 }
 
 #include <mono/metadata/mono-debug.h>
@@ -119,6 +119,11 @@ void InitializeRootDomain(){
 	
 	char lib2Path[MAX_PATH];
 	Q_snprintf( lib2Path, sizeof(libPath), "%s\\bin\\sharp.dll", gamePath );
+
+	if(!filesystem->FileExists(lib2Path))
+	{
+		Error("Unable to find: %s", lib2Path);
+	}
 
 	mono_jit_init (lib2Path);
 
@@ -177,7 +182,7 @@ void Sharp::Setup(){
 	MonoAssembly* assembly = mono_domain_assembly_open ( mono_get_root_domain(), m_szSharpPath );
 	
 	if (!assembly){
-		Warning("SHARP: Could not load assembly at: %s\n", m_szSharpPath);
+		Error("SHARP: Could not load assembly at: %s\n", m_szSharpPath);
 		return;
 	}
 
@@ -299,6 +304,20 @@ void Sharp::Initialize(){
 		mono_unhandled_exception( exception );
 
 
+	MonoClass *baseModClass = mono_class_from_name (image, "BaseAddon", "Base");
+	AssertMsg(baseModClass, "Unable to find BaseAddon.Base class!");
+
+	MonoMethod* baseReadFile = mono_class_get_method_from_name( baseModClass, "NicanReadFile", 1 );
+	AssertMsg( baseReadFile, "Could not find the BaseAddon.Base::NicanReadFile method");
+
+	args[0] = nullptr;
+	mono_runtime_invoke (baseReadFile, NULL, args, &exception);
+
+	if (exception) 
+		mono_unhandled_exception( exception );
+
+
+
 }
 
 void Sharp::Shutdown(){
@@ -310,7 +329,7 @@ void Sharp::Shutdown(){
 	mono_domain_try_unload( m_pDomain, &exc );
 	if( exc ){
 		Assert(0);
-		printf("We got an exception!");
+		Msg("We got an exception!");
 	}
 
 	m_pDomain = NULL;

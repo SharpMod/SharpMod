@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using Sharp;
+using SourceForts;
 
 namespace BaseAddon
 {
@@ -11,7 +12,7 @@ namespace BaseAddon
     public static class Base
     {
         public static Ballrace ballrace;
-        public static SourceForts.SourceForts SourceForts;
+        public static SourceFortsMod SourceForts;
 
         static void Main(string[] args)
         {
@@ -19,7 +20,7 @@ namespace BaseAddon
             UserMessageHook.AddHook(0, "lol", ReadMessage );
             UserMessageHook.AddHook(1, "lol2", ReadMessage );
              */
-            SourceForts = new SourceForts.SourceForts();
+            SourceForts = new SourceFortsMod();
             Game.Gamemode = SourceForts;
            
         }
@@ -41,8 +42,8 @@ namespace BaseAddon
         [ConCommand("nican_readfile", "Attempt to read a file, and hopefully throw an exception!", CommandFlags.CLIENTDLL)]
         public static void NicanReadFile(CCommand command)
         {
-            string[] lines = File.ReadAllLines("C:/LJCP1215.log");
-            Console.WriteLine("Read a total of: {0} lines", lines.Length );
+            //string[] lines = File.ReadAllLines("C:/LJCP1215.log");
+            //Console.WriteLine("Read a total of: {0} lines", lines.Length );
         }
 
         [ConCommand("testprint", "Print the first C# message!", CommandFlags.CLIENTDLL )]
