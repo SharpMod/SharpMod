@@ -1,7 +1,7 @@
+#include "sharp_native_entity.h"
 #include "cbase.h"
 #include "sharp.h"
 #include <filesystem.h>
-#include "sharp_native_entity.h"
 #include "sharp/sharphelper.h"
 #include <mono/metadata/tokentype.h>
 
@@ -32,6 +32,11 @@ ISharpAddons *SharpAddons()
 	static ISharpAddons s_EntityFactory;
 	return &s_EntityFactory;
 }
+
+
+#include <vector>
+static std::vector<SharpMethodItem*> registerMethods;
+static std::vector<ISharpOnLoad*> onLoadMethods;
 
 
 void ISharpAddons::AddAddon( IMonoAddon* monoAddon ){

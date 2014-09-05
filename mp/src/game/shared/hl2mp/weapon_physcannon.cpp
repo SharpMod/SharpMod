@@ -1098,7 +1098,7 @@ public:
 
 	bool	HasAnyAmmo( void ) { return true; }
 
-	virtual SharpClass GetMonoClass() override { 
+	virtual SharpClass GetMonoClass() OVERRIDE { 
 		return SharpClass(PhysCannonClassReference.Get());
 	};
 

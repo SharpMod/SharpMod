@@ -2,8 +2,6 @@
 #include "cbase.h"
 #include "sharp/sharp.h"
 #include "dt_common.h"
-#include <string>
-#include <vector>
 
 SendProp SendPropSharp();
 

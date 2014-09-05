@@ -14,7 +14,7 @@ public:
 	};
 	~CSharpEntity();
 
-	virtual SharpClass CSharpEntity::GetMonoClass(){ return m_monoClass; };
+	virtual SharpClass GetMonoClass(){ return m_monoClass; };
 	virtual	bool	IsSharpEntity( void ) const { return true; }
 
 	virtual void PostConstructor( const char *szClassname );

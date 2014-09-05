@@ -66,7 +66,7 @@ public:
 protected:
 	
 };
-SharpTrace sharpPhysics;
+static SharpTrace sharpTrace;
 
 
 void SharpTrace::RegisterInternalCalls( void ){

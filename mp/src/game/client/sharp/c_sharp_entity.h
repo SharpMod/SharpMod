@@ -10,19 +10,19 @@ public:
 	DECLARE_CLASS( C_SharpEntity, C_BaseAnimating );
 	DECLARE_CLIENTCLASS();
 
-	virtual void Spawn( void ) override;
-	void ClientThink( void ) override;
-	int DrawModel( int flags ) override;
+	virtual void Spawn( void ) OVERRIDE;
+	void ClientThink( void ) OVERRIDE;
+	int DrawModel( int flags ) OVERRIDE;
 
-	virtual void					OnDataChanged( DataUpdateType_t updateType ) override;
-	virtual void			PostDataUpdate( DataUpdateType_t updateType ) override;
+	virtual void					OnDataChanged( DataUpdateType_t updateType ) OVERRIDE;
+	virtual void			PostDataUpdate( DataUpdateType_t updateType ) OVERRIDE;
 
 	virtual	bool					IsSharpEntity( void ) const { return true; }
 
 	// Server to client message received
-	virtual void					ReceiveMessage( int classID, bf_read &msg ) override;
+	virtual void					ReceiveMessage( int classID, bf_read &msg ) OVERRIDE;
 
-	virtual SharpClass GetMonoClass() override;
+	virtual SharpClass GetMonoClass() OVERRIDE;
 
 	//virtual char const				*GetClassname( void ){
 	//	return STRING( m_iSharpClassname );

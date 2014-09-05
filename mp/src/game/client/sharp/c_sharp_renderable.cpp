@@ -46,8 +46,8 @@ public:
 	virtual const matrix3x4_t &		RenderableToWorldTransform();
 	virtual void					GetRenderBounds( Vector& mins, Vector& maxs );
 	virtual bool					ShouldDraw( void );
-	virtual int						DrawModel( int flags ) override;
-	bool					IsTransparent( void ) override;
+	virtual int						DrawModel( int flags ) OVERRIDE;
+	bool					IsTransparent( void ) OVERRIDE;
 
 //Methods to call in sharp code
 public:

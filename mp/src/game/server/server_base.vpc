@@ -61,8 +61,10 @@ $Configuration
 
 	$Linker
 	{
+		$SystemLibraries				"mono-2.0" [$LINUXALL]
 		$AdditionalDependencies			"$BASE winmm.lib mono-2.0.lib" [$WIN32]
-		$SystemLibraries                                                        "iconv" [$OSXALL]
+		$SystemLibraries                "iconv" [$OSXALL]
+		$SystemLibraries				"rt" [$LINUXALL]
 	}
 }
 
@@ -1043,6 +1045,8 @@ $Project
 		$Lib	particles
 		$Lib	tier2
 		$Lib	tier3
+		$Lib 		libmono-2.0
+		
 		$ImpLibexternal steam_api
 	}
 }

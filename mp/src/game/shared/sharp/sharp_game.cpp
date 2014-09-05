@@ -145,7 +145,7 @@ public:
 	SharpParticleInternal() : SharpInternalVariable<IEffects>("Sharp","ParticleUtil","_ParticleSystem"){
 	}
 
-	virtual IEffects* LoadValue() override {
+	virtual IEffects* LoadValue() OVERRIDE {
 		return g_pEffects;
 	}
 };

@@ -17,6 +17,7 @@ $Configuration
 	{
 		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\game\shared\hl2,.\hl2,.\hl2mp,$SRCDIR\game\shared\hl2mp"
 		$PreprocessorDefinitions		"$BASE;HL2MP;HL2_DLL"
+		$GCC_ExtraCompilerFlags			"-std=c++0x" [$LINUXALL]
 	}
 }
 

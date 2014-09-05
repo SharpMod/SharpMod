@@ -4,6 +4,7 @@
 #include <mono/metadata/tokentype.h>
 #include "sharp/sharphelper.h"
 
+#include <cstring>
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -86,7 +87,7 @@ static void SendProxy_SharpListString( const SendProp *pProp, const void *pStruc
 	if( SendProxy_SharpList( pData, &str, iElement, sharpDT.m_getEntityStringVarMethod ) && str != NULL ){
 		char* monoStr = mono_string_to_utf8( str );
 
-		if( strcpy_s( pEntity->m_sharpDT.m_bufferedStr[iElement].buf, DT_MAX_STRING_BUFFERSIZE, monoStr ) == 0 ){
+		if( std::strncpy( pEntity->m_sharpDT.m_bufferedStr[iElement].buf, monoStr, DT_MAX_STRING_BUFFERSIZE ) == 0 ){
 			pOut->m_pString = pEntity->m_sharpDT.m_bufferedStr[iElement].buf;
 		} else {
 			Assert("Failed to copy string");

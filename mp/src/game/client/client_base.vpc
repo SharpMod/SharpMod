@@ -1283,6 +1283,7 @@ $Project
 		$Lib		tier3
 		$Lib		vgui_controls
 		$Lib		vtf
+		$Lib 		libmono-2.0
 		$ImpLib		steam_api
 		
 		$Lib $LIBCOMMON/libcrypto [$POSIX]

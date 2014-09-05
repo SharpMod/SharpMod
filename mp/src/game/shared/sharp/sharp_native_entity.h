@@ -1,12 +1,13 @@
 #pragma once
+#include <string>
+#include <vector>
+#include <memory>
 
 #include "cbase.h"
 #include "dt_common.h"
 #include "sharp/sharp.h"
 #include "sharp/sharphelper.h"
-#include <string>
-#include <vector>
-#include <memory>
+
 
 struct NativeEntityData {
 	std::string m_entityName;

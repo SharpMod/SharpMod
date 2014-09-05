@@ -71,7 +71,7 @@ class SharpClassReference : ISharpOnLoad {
 public:
 	SharpClassReference(const char* name_space, const char* class_name );
 
-	virtual void LoadFromImage( MonoImage* image ) override;
+	virtual void LoadFromImage( MonoImage* image ) OVERRIDE;
 	MonoClass* Get();
 
 };
@@ -86,7 +86,7 @@ class SharpMethodReference : ISharpOnLoad  {
 public:
 	SharpMethodReference(const char* name_space, const char* class_name, const char* method_name, int param_count );
 
-	virtual void LoadFromImage( MonoImage* image ) override;
+	virtual void LoadFromImage( MonoImage* image ) OVERRIDE;
 	MonoMethod* Get();
 	MonoMethod* GetVirtual(MonoObject* obj);
 
@@ -109,7 +109,7 @@ public:
 		SharpAddons()->onLoadMethods.push_back(this);
 	};
 
-	void LoadFromImage( MonoImage* image ) override {
+	void LoadFromImage( MonoImage* image ) OVERRIDE {
 		m_monoClass = mono_class_from_name( image, mName_space, mClass_name );
 		Assert( m_monoClass );
 

@@ -5,6 +5,7 @@
 // $NoKeywords: $
 //=============================================================================//
 
+#include "sharp/sharp_native_entity.h"
 #include "cbase.h"
 #include "saverestore.h"
 #include "globalstate.h"
@@ -37,7 +38,6 @@
 #include "util.h"
 #include "cdll_int.h"
 #include "sharp/entitylistner.h"
-#include "sharp/sharp_native_entity.h"
 
 #ifdef PORTAL
 #include "PortalSimulation.h"

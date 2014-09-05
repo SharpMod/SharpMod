@@ -1,13 +1,20 @@
 #pragma once
 
-#include <mono/jit/jit.h>
+#undef max
+#undef min
+
 #include <vector>
+#include <minmax.h>
+
+#include <typeinfo>
+#include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/mono-config.h>
 #include <mono/metadata/environment.h>
 #include <mono/metadata/exception.h>
 
 #include "mono/metadata/threads.h"
+
 
 #define ASSERT_DOMAIN() \
 	g_Sharp.AssertDomain();
@@ -29,6 +36,8 @@
 #else
 #define MONO_CLASS "Server"
 #endif
+
+#define __OVERRIDE__ 
 
 abstract_class IMonoAddon {
 public:

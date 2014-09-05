@@ -1,10 +1,10 @@
-#include "cbase.h"
+#include <cstring>
 #include "sharp_native_entity.h"
+#include "cbase.h"
 #include "mono/metadata/threads.h"
 #include "sharp/entitylistner.h"
 #include "sharp/sharphelper.h"
 #include <mono/metadata/tokentype.h>
-
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -24,17 +24,17 @@ public:
 	virtual	bool	IsSharpEntity( void ) const { return false; }
 
 #ifdef CLIENT_DLL
-	virtual ClientClass* GetClientClass() override {
+	virtual ClientClass* GetClientClass() OVERRIDE {
 		return m_monoEntityData->m_clientClass;	
 	};
 #else
-	virtual ServerClass* GetServerClass() override {
+	virtual ServerClass* GetServerClass() OVERRIDE {
 		return m_monoEntityData->m_serverClass;	
 	};
 
 #endif
 
-	virtual SharpClass GetMonoClass() override { 
+	virtual SharpClass GetMonoClass() OVERRIDE { 
 		return m_monoEntityData->m_monoClass; 
 	};
 
@@ -48,7 +48,7 @@ SharpNativeDT g_nativeDT;
 #ifndef CLIENT_DLL
 CBaseAnimating* SharpNativeDT::CreateEntity( const char *szClassname ){
 
-	for each (const NativeEntityData &elem in m_entities ){
+	for(auto &elem : m_entities ){
 
 		if( std::strcmp( elem.m_entityName.c_str(), szClassname ) != 0 )
 			continue;
