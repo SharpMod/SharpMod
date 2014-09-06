@@ -174,8 +174,8 @@ void Sharp::Setup(){
 		pszFileName = g_pFullFileSystem->FindNext( findHandle );
 	}
 
-	filesystem->AddSearchPath( "C:\\Users\\Nican\\Documents\\GitHub\\source-sdk-2013\\mp\\game\\mod_hl2mp\\addons\\GMT2_BallRace", "GAME" );
-	filesystem->AddSearchPath( "C:\\Users\\Nican\\Documents\\GitHub\\source-sdk-2013\\mp\\game\\mod_hl2mp\\addons\\GMT2_Base", "GAME" );
+	//filesystem->AddSearchPath( "C:\\Users\\Nican\\Documents\\GitHub\\source-sdk-2013\\mp\\game\\mod_hl2mp\\addons\\GMT2_BallRace", "GAME" );
+	//filesystem->AddSearchPath( "C:\\Users\\Nican\\Documents\\GitHub\\source-sdk-2013\\mp\\game\\mod_hl2mp\\addons\\GMT2_Base", "GAME" );
 
 	g_pFullFileSystem->FindClose( findHandle );
 

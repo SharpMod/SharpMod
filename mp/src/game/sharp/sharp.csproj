@@ -45,8 +45,6 @@
     <Compile Include="EntityDT.cs" />
     <Compile Include="Reflection.cs" />
     <Compile Include="Math.cs" />
-    <Compile Include="Command.cs" />
-    <Compile Include="Entity.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Mesh.cs" />
     <Compile Include="Panel.cs" />
@@ -54,11 +52,13 @@
     <Compile Include="Physics.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sharp.cs" />
     <Compile Include="Timer.cs" />
     <Compile Include="Trace.cs" />
     <Compile Include="UserMessage.cs" />
     <Compile Include="Weapon.cs" />
+    <Compile Include="command.cs" />
+    <Compile Include="entity.cs" />
+    <Compile Include="sharp.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
