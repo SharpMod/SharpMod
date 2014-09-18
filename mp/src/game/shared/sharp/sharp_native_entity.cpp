@@ -1,6 +1,6 @@
 #include <cstring>
-#include "sharp_native_entity.h"
 #include "cbase.h"
+#include "sharp_native_entity.h"
 #include "mono/metadata/threads.h"
 #include "sharp/entitylistner.h"
 #include "sharp/sharphelper.h"

@@ -5,8 +5,8 @@
 // $NoKeywords: $
 //=============================================================================//
 
-#include "sharp/sharp_native_entity.h"
 #include "cbase.h"
+#include "sharp/sharp_native_entity.h"
 #include "saverestore.h"
 #include "globalstate.h"
 #include <stdarg.h>

@@ -26,7 +26,8 @@ public:
 
 SharpDT sharpDT;
 
-void SharpDT::UpdateMehods( MonoImage* image ){
+void SharpDT::UpdateMehods( MonoImage* image )
+{
 	SharpClass entityDTClass = mono_class_from_name( image, "Sharp", "EntityDT");
 	
 	m_getEntityIntVarMethod = entityDTClass.GetMethod("GetEntityIntVar", 3 );
@@ -84,14 +85,13 @@ static void SendProxy_SharpListString( const SendProp *pProp, const void *pStruc
 
 	pOut->m_pString = "";
 
-	if( SendProxy_SharpList( pData, &str, iElement, sharpDT.m_getEntityStringVarMethod ) && str != NULL ){
+	if( SendProxy_SharpList( pData, &str, iElement, sharpDT.m_getEntityStringVarMethod ) && str != NULL )
+	{
 		char* monoStr = mono_string_to_utf8( str );
 
-		if( std::strncpy( pEntity->m_sharpDT.m_bufferedStr[iElement].buf, monoStr, DT_MAX_STRING_BUFFERSIZE ) == 0 ){
-			pOut->m_pString = pEntity->m_sharpDT.m_bufferedStr[iElement].buf;
-		} else {
-			Assert("Failed to copy string");
-		}
+		Q_strncpy( pEntity->m_sharpDT.m_bufferedStr[iElement].buf, monoStr, DT_MAX_STRING_BUFFERSIZE );
+		
+		pOut->m_pString = pEntity->m_sharpDT.m_bufferedStr[iElement].buf;
 
 		mono_free( monoStr );
 	}
@@ -99,14 +99,12 @@ static void SendProxy_SharpListString( const SendProp *pProp, const void *pStruc
 
 static void SendProxy_SharpListVector( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
 {
-
-	if( !SendProxy_SharpList( pData, &pOut->m_Vector, iElement, sharpDT.m_getEntityVectorVarMethod ) ){
+	if( !SendProxy_SharpList( pData, &pOut->m_Vector, iElement, sharpDT.m_getEntityVectorVarMethod ) )
+	{
 		pOut->m_Vector[0] = 0.0f;
 		pOut->m_Vector[1] = 0.0f;
 		pOut->m_Vector[2] = 0.0f;
 	}
-
-	
 }
 
 static int SendProxyArrayLength_SharpArrayInt( const void *pStruct, int objectID )

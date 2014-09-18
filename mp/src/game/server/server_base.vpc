@@ -1045,7 +1045,7 @@ $Project
 		$Lib	particles
 		$Lib	tier2
 		$Lib	tier3
-		$Lib 		libmono-2.0
+		$Lib 	libmono-2.0  [$LINUXALL]
 		
 		$ImpLibexternal steam_api
 	}

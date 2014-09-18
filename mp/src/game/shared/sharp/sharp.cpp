@@ -1,9 +1,9 @@
-#include "sharp_native_entity.h"
 #include "cbase.h"
 #include "sharp.h"
 #include <filesystem.h>
 #include "sharp/sharphelper.h"
 #include <mono/metadata/tokentype.h>
+#include "sharp_native_entity.h"
 
 Sharp g_Sharp;
 
