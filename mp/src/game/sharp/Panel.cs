@@ -250,7 +250,15 @@ namespace Sharp
             set;
         }
 
-        public extern int Visible
+        public extern bool Visible
+        {
+            [MethodImplAttribute(MethodImplOptions.InternalCall)]
+            get;
+            [MethodImplAttribute(MethodImplOptions.InternalCall)]
+            set;
+        }
+
+        public extern bool Enabled
         {
             [MethodImplAttribute(MethodImplOptions.InternalCall)]
             get;
@@ -316,6 +324,12 @@ namespace Sharp
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern void InvalidateLayout(bool layoutNow = false, bool layoutSchema = false);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern void MakePopup();
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern void MoveToFront();
 
         public void CenterHorizontally( double center = 0.5 )
         {
@@ -411,9 +425,14 @@ namespace Sharp
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern Button(string text);
 
-        public virtual void OnClick()
-        {
-        }
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern virtual void OnClick();
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern override void OnMousePressed(ButtonCode code);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern override void OnMouseReleased(ButtonCode code);
     }
 
 	public class ImagePanel : Panel

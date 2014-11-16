@@ -125,7 +125,7 @@ namespace SourceForts
 
                 if (player.Team == (int) Teams.Unassigned)
                 {
-                    new TeamSelectGUI();
+                    //new TeamSelectGUI();
                 }
                 return;
             }

@@ -131,7 +131,7 @@ const char *C_PlayerResource::GetPlayerName( int iIndex )
 {
 	if ( iIndex < 1 || iIndex > MAX_PLAYERS )
 	{
-		Assert( false );
+		//Assert( false );
 		return PLAYER_ERROR_NAME;
 	}
 	
@@ -158,7 +158,7 @@ int C_PlayerResource::GetTeam(int iIndex )
 {
 	if ( iIndex < 1 || iIndex > MAX_PLAYERS )
 	{
-		Assert( false );
+		//Assert( false );
 		return 0;
 	}
 	else

@@ -6,10 +6,24 @@ using Sharp;
 
 namespace SourceForts
 {
-    class TeamSelectGUI : Panel
+    public class TeamButton : Button
     {
-        public Button Red = new Button("RED");
-        public Button Blue = new Button("BLUE");
+        public TeamButton(string text) : base(text)
+        {
+        }
+
+        public override void OnClick()
+        {
+            base.OnClick();
+            Console.WriteLine("GOT ON CLICK");
+        }
+
+    }
+
+    public class TeamSelectGUI : Panel
+    {
+        public Button Red = new TeamButton("RED");
+        public Button Blue = new TeamButton("BLUE");
 
         public TeamSelectGUI()
         {
@@ -21,6 +35,14 @@ namespace SourceForts
 
             InvalidateLayout();
             PerformLayout();
+            MoveToFront();
+
+            this.AllowMouseInput = true;
+            Red.AllowMouseInput = true;
+            Blue.AllowMouseInput = true;
+            this.Enabled = true;
+            Blue.Enabled = true;
+            Red.Enabled = true;
         }
 
         public override void PerformLayout()
@@ -40,6 +62,31 @@ namespace SourceForts
             Blue.Tall = 90;
 
             Console.WriteLine("LINE!");
+        }
+
+        public static TeamSelectGUI TeamSelectGui;
+
+        [ConCommand("+teamchoose", "Show the GUI", CommandFlags.CLIENTDLL)]
+        public static void ShowTeamChoose(CCommand command)
+        {
+            if (TeamSelectGui != null)
+            {
+                TeamSelectGui.Dispose();
+                TeamSelectGui = null;
+            }
+
+            TeamSelectGui = new TeamSelectGUI();
+            TeamSelectGui.MakePopup();
+        }
+
+        [ConCommand("-teamchoose", "Hide the GUI", CommandFlags.CLIENTDLL)]
+        public static void HideTeamChoose(CCommand command)
+        {
+            if (TeamSelectGui != null)
+            {
+                TeamSelectGui.Dispose();
+                TeamSelectGui = null;
+            }
         }
     }
 }

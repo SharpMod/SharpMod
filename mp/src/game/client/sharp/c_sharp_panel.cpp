@@ -133,11 +133,13 @@ public:
 
 	virtual void OnCursorEntered()
 	{
+		T::OnCursorEntered();
 		CallMethod(m_cursorEnteredMethod);
 	};
 
 	virtual void OnCursorExited()
 	{
+		T::OnCursorExited();
 		CallMethod(m_cursorExitedMethod);
 	}
 
@@ -157,6 +159,17 @@ public:
 	{
 		void* args[1] = { &code };
 		CallMethod(m_mouseReleasedMethod, args);
+	}
+
+	void BaseOnMouseReleased(vgui::MouseCode code)
+	{
+		//I am probably going to shoot myself in the foot with this
+		T::OnMouseReleased(code);
+	}
+
+	void BaseOnMousePressed(vgui::MouseCode code)
+	{
+		T::OnMousePressed(code);
 	}
 
 	virtual void OnMouseWheeled(int delta)
@@ -239,13 +252,19 @@ public:
 		SharpTemplatePanel<vgui::Button>::InitMono(object);
 
 		SharpObject sharpObj( object );
-		m_onClick = sharpObj.GetVirtual( sharpPanel.m_paintMethod );
+		m_onClick = sharpObj.GetVirtual( sharpPanel.m_onClick );
 	}
 
 	virtual void DoClick()
 	{
 		CallMethod(m_onClick);
 	}
+
+	void BaseDoClick()
+	{
+		vgui::Button::DoClick();
+	}
+
 };
 
 
@@ -472,6 +491,16 @@ static void SetPanelVisible( PanelMonoObject *monoPanel, bool visible ) {
 	monoPanel->Get()->SetVisible( visible );
 };
 
+static bool GetPanelEnabled(PanelMonoObject *monoPanel) {
+	ASSERT_DOMAIN();
+	return monoPanel->Get()->IsEnabled();
+};
+
+static void SetPanelEnabled(PanelMonoObject *monoPanel, bool visible) {
+	ASSERT_DOMAIN();
+	monoPanel->Get()->SetEnabled(visible);
+};
+
 static bool GetAllowMouseInput ( PanelMonoObject *monoPanel ) {
 	ASSERT_DOMAIN();
 	return monoPanel->Get()->IsMouseInputEnabled();
@@ -495,6 +524,16 @@ static void SetAllowKeyboardInput( PanelMonoObject *monoPanel, bool state ) {
 static void PanelInvalidateLayout( PanelMonoObject *monoPanel, bool layoutNow, bool layout_schema ) {
 	ASSERT_DOMAIN();
 	monoPanel->Get()->InvalidateLayout( layoutNow, layout_schema );
+};
+
+static void PanelMakePopup(PanelMonoObject *monoPanel) {
+	ASSERT_DOMAIN();
+	monoPanel->Get()->MakePopup();
+};
+
+static void PanelMoveToFront(PanelMonoObject *monoPanel) {
+	ASSERT_DOMAIN();
+	monoPanel->Get()->MoveToFront();
 };
 
 static bool GetAutoDelete ( PanelMonoObject *monoPanel ) {
@@ -730,6 +769,28 @@ static void CreateButtonPanel ( PanelMonoObject *monoPanel, MonoString* str ) {
 };
 static SharpMethodItem SharpCtorButton("Sharp.Button::.ctor", CreateButtonPanel );
 
+static void ButtonOnMouseReleased(TemplateSharpObject<SharpButtonPanel> *monoPanel, vgui::MouseCode button) {
+	ASSERT_DOMAIN();
+
+	monoPanel->Get()->BaseOnMouseReleased(button);
+};
+static SharpMethodItem ButtonOnMouseReleasedItem("Sharp.Button::OnMouseReleased", ButtonOnMouseReleased);
+
+
+static void ButtonOnMousePressed(TemplateSharpObject<SharpButtonPanel> *monoPanel, vgui::MouseCode button) {
+	ASSERT_DOMAIN();
+
+	monoPanel->Get()->BaseOnMousePressed(button);
+};
+static SharpMethodItem ButtonOnMousePressedItem("Sharp.Button::OnMousePressed", ButtonOnMousePressed);
+
+static void ButtonOnClick(TemplateSharpObject<SharpButtonPanel> *monoPanel) {
+	ASSERT_DOMAIN();
+
+	monoPanel->Get()->BaseDoClick();
+};
+static SharpMethodItem ButtonOnClickItem("Sharp.Button::OnClick", ButtonOnClick);
+
 SharpPanelManager::SharpPanelManager(){
 	SharpAddons()->AddAddon( this );
 };
@@ -754,6 +815,8 @@ void SharpPanelManager::RegisterInternalCalls(){
 		mono_add_internal_call ("Sharp.Panel::.ctor", CreatePanel );
 		mono_add_internal_call ("Sharp.Panel::Dispose", DestroyPanel );
 		mono_add_internal_call ("Sharp.Panel::InvalidateLayout", PanelInvalidateLayout );
+		mono_add_internal_call("Sharp.Panel::MakePopup", PanelMakePopup);
+		mono_add_internal_call("Sharp.Panel::MoveToFront", PanelMoveToFront);
 
 		mono_add_internal_call ("Sharp.Panel::get_Position", GetPanelPos );
 		mono_add_internal_call ("Sharp.Panel::set_Position", SetPanelPos );
@@ -765,6 +828,8 @@ void SharpPanelManager::RegisterInternalCalls(){
 		mono_add_internal_call ("Sharp.Panel::set_ZPos", SetPanelZPos );
 		mono_add_internal_call ("Sharp.Panel::get_Visible", GetPanelVisible );
 		mono_add_internal_call ("Sharp.Panel::set_Visible", SetPanelVisible );
+		mono_add_internal_call("Sharp.Panel::get_Enabled", GetPanelEnabled);
+		mono_add_internal_call("Sharp.Panel::set_Enabled", SetPanelEnabled);
 		mono_add_internal_call ("Sharp.Panel::get_Parent", GetPanelParent );
 		mono_add_internal_call ("Sharp.Panel::set_Parent", SetPanelParent );
 		mono_add_internal_call ("Sharp.Panel::get_AllowMouseInput", GetAllowMouseInput );

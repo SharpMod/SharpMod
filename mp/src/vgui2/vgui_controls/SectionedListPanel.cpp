@@ -1825,7 +1825,8 @@ void SectionedListPanel::SetSelectedItem(CItemButton *item)
 	m_hSelectedItem = item;
 	if (m_hSelectedItem.Get())
 	{
-		m_hSelectedItem->SetSelected(true);
+		//TODO (Nican): Why does the scoreboard require this?
+		//m_hSelectedItem->SetSelected(true);
 	}
 
 	Repaint();
