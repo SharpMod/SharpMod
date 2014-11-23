@@ -10,7 +10,19 @@ namespace SourceForts
     [Entity("info_player_team_spawn")]
     public class InfoPlayerTeamSpawn : BaseAnimating
     {
+        public override bool AcceptInput(string name, Entity activator, Entity caller)
+        {
+            Console.WriteLine("Got input for spawn: ", name);
 
+            return true;
+        }
+
+        public override bool KeyValue(string keyName, string keyValue)
+        {
+            Console.WriteLine("Got keyvalue for spawn: ", name);
+
+            return true;
+        }
     }
 
     public abstract class EnvBlockSpawnerBase : BaseAnimating
@@ -33,6 +45,7 @@ namespace SourceForts
             block.Origin = this.Origin;
             //block.Owner = player;
             block.Spawn();
+            block.SetSpawner(player);
         }
 
         public bool CanSpawn(Entity entity)
@@ -131,6 +144,7 @@ namespace SourceForts
                 this.Physics.Gravity = true;
 
                 this.AllowMotion = false;
+                this.ResetLife();
             }
         }
 
@@ -144,7 +158,7 @@ namespace SourceForts
 
             int skinId = (int)MathX.Clamp((float)Math.Floor((1.0f - HealthFrac) * 6.0f), 0.0f, 5.0f);
 
-            if (Team == (int)Teams.Blue)
+            if (LastTocuhedPlayer.Team == (int)Teams.Blue)
                 skinId += 6;
 
             Skin = skinId;
@@ -190,6 +204,11 @@ namespace SourceForts
                 if (motion == true)
                     Physics.Wake();
             }
+        }
+
+        internal void SetSpawner(Player player)
+        {
+            UpdateSkin(player);
         }
     }
 

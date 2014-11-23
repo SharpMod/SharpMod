@@ -264,6 +264,27 @@ static MonoObject* GetCommandClient()
 	return monoHandle.GetObject().m_monoObject;
 };
 
+#if defined( CLIENT_DLL )
+static void ClientEngineClientCmd(MonoString* monoStr) {
+	ASSERT_DOMAIN();
+
+	if (monoStr == NULL)
+		mono_raise_exception(mono_get_exception_argument_null("command"));
+
+	char* input = mono_string_to_utf8(monoStr);
+
+	if (strlen(input) > 512)
+	{
+		mono_free(input);
+		mono_raise_exception(mono_get_exception_overflow());
+	}
+
+	engine->ClientCmd(input);
+	mono_free(input);
+};
+static SharpMethodItem ButtonOnClickItem("Sharp.ClientEngine::ClientCmd", ClientEngineClientCmd);
+#endif
+
 void SharpCommand::RegisterInternalCalls(){
 	mono_add_internal_call ("Sharp.ConCommand::Create"MONO_CLASS, CreateConCommandObject );
 	mono_add_internal_call ("Sharp.ConCommand::Dispose"MONO_CLASS, DestroyConCommandObject );

@@ -111,7 +111,7 @@ namespace SourceForts
             }
             else
             {
-               // StartBuild();
+                // StartBuild();
                 State = GameState.WAITING_PLAYERS;
             }
         }
@@ -123,9 +123,10 @@ namespace SourceForts
             {
                 Console.WriteLine("Client player initial team: {0}", player.Team);
 
-                if (player.Team == (int) Teams.Unassigned)
+                if (player.Team == (int)Teams.Unassigned)
                 {
-                    //new TeamSelectGUI();
+                    var teamgui = new TeamSelectGUI();
+                    teamgui.MakePopup();
                 }
                 return;
             }
@@ -133,16 +134,40 @@ namespace SourceForts
             if (State == GameState.WAITING_PLAYERS)
                 StartBuild();
 
-            Entity spawnPoint = Game.GetEntitiesByClassname("info_player_team_spawn").FirstOrDefault();
+            if (player.Team == (int)Teams.Unassigned)
+            {
+                player.ObserverMove = SpectatorMovement.Roaming;
+                player.Solid = SolidType.NONE;
+                player.MoveType = MoveType.NOCLIP;
+                Console.WriteLine("Player spawning with no team.");
+                return;
+            }
+
+            Console.WriteLine("Player team: {0}", player.Team);
+
+            foreach (var ent in Game.GetEntitiesByClassname("info_player_team_spawn"))
+            {
+                Console.WriteLine("{0} with team {1} pos: {2}", ent, ent.Team, ent.Origin);
+            }
+
+            List<Entity> spawnPoints = Game.GetEntitiesByClassname("info_player_team_spawn")
+                .Where(t => t.Team == player.Team && t.Index < 100) //Not sure what is happening with the entity index; TODO: MUST FIX.
+                .ToList();
+
+            if (spawnPoints.Count == 0)
+            {
+                Console.WriteLine("Could not find spawn for player...?");
+                return;
+            }
+
+            Random rnd = new Random();
+            Entity spawnPoint = spawnPoints[rnd.Next(spawnPoints.Count)];
 
             Console.WriteLine("Player spawning {0} -- {1}", spawnPoint, State);
 
             if (spawnPoint == null)
                 return;
 
-            Console.WriteLine("Player initial team: {0}", player.Team);
-
-            player.Team = (int) Teams.Unassigned;
             player.Teleport(spawnPoint.Origin, null, Vector.Zero);
             player.Origin = spawnPoint.Origin + new Vector(0.0f, 0.0f, 1.0f);
 
@@ -161,7 +186,7 @@ namespace SourceForts
                 player.Armor = plyClass.StartArmor;
 
                 //TODO: Set Model
-            }            
+            }
         }
 
         public override bool PhysCannonCanPickupObject(Player player, Entity other, float maxMass)
@@ -237,8 +262,8 @@ namespace SourceForts
                 var status = player.GetWeldStatus();
                 if (status != null)
                 {
-                    if( Block.WeldThink(player, status) == false )
-                        Block.StopWeld( player );
+                    if (Block.WeldThink(player, status) == false)
+                        Block.StopWeld(player);
 
                     return;
                 }
@@ -304,7 +329,7 @@ namespace SourceForts
                 //TODO: Switch to next map
             }
 
-            
+
 
             Console.WriteLine("Game state is: {0}", State);
         }
@@ -329,7 +354,7 @@ namespace SourceForts
 
         public void CleanupGame()
         {
-            foreach(Player player in Game.GetPlayers() )
+            foreach (Player player in Game.GetPlayers())
             {
                 Block.StopWeld(player);
                 Block.StopRepair(player);
@@ -589,11 +614,11 @@ namespace SourceForts
             if (block != null && block.Team == player.Team)
             {
                 float newHealth = Math.Min(block.Health + RepairLife, MaxHealth);
-                block.Health = (int) newHealth;
+                block.Health = (int)newHealth;
 
                 RepairBlockStatus weld = player.GetRepairStatus();
 
-                if( weld == null )
+                if (weld == null)
                     player.Properties["_RepairBlockStatus"] = new RepairBlockStatus();
             }
         }

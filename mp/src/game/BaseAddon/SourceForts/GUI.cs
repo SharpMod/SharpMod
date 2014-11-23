@@ -6,24 +6,40 @@ using Sharp;
 
 namespace SourceForts
 {
+    public delegate void TeamButtonHandler();
+
     public class TeamButton : Button
     {
-        public TeamButton(string text) : base(text)
+        public Teams TeamNumber { get; private set; }
+
+        public event TeamButtonHandler Clicked;
+
+        public TeamButton(string text, Teams team)
+            : base(text)
         {
+            TeamNumber = team;
+
+
+            Wide = 190;
+            Tall = 90;
         }
 
         public override void OnClick()
         {
             base.OnClick();
-            Console.WriteLine("GOT ON CLICK");
+
+            ClientEngine.ClientCmd(string.Format("jointeam {0}", (int)TeamNumber));
+
+            if (Clicked != null)
+                Clicked.Invoke();
         }
 
     }
 
     public class TeamSelectGUI : Panel
     {
-        public Button Red = new TeamButton("RED");
-        public Button Blue = new TeamButton("BLUE");
+        public TeamButton Red = new TeamButton("RED", Teams.Red);
+        public TeamButton Blue = new TeamButton("BLUE", Teams.Blue);
 
         public TeamSelectGUI()
         {
@@ -37,12 +53,20 @@ namespace SourceForts
             PerformLayout();
             MoveToFront();
 
-            this.AllowMouseInput = true;
+            AllowMouseInput = true;
             Red.AllowMouseInput = true;
             Blue.AllowMouseInput = true;
-            this.Enabled = true;
-            Blue.Enabled = true;
-            Red.Enabled = true;
+
+            Red.Clicked += RegisterForDispose;
+            Blue.Clicked += RegisterForDispose;
+        }
+
+        public void RegisterForDispose()
+        {
+            Timer.NewTimer(0.0f, () =>
+            {
+                this.Dispose();
+            });
         }
 
         public override void PerformLayout()
@@ -53,15 +77,9 @@ namespace SourceForts
 
             Red.Y = 5;
             Red.X = 5;
-            Red.Wide = 190;
-            Red.Tall = 90;
 
             Blue.Y = 105;
             Blue.X = 5;
-            Blue.Wide = 190;
-            Blue.Tall = 90;
-
-            Console.WriteLine("LINE!");
         }
 
         public static TeamSelectGUI TeamSelectGui;

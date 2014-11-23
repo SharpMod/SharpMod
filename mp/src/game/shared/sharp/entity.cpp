@@ -275,16 +275,16 @@ static void EntitySetTeam ( MonoObject* methods, EntityMonoObject *monoEntity, i
 
 static int EntityGetSkin ( MonoObject* methods, EntityMonoObject *monoEntity ) {
 	ASSERT_DOMAIN();
-	CBaseEntity* entity = monoEntity->GetEntity();
+	CBaseAnimating* entity = monoEntity->GetAnimating();
 
-	return entity->GetTextureFrameIndex();
+	return entity->m_nSkin;
 };
 
 static void EntitySetSkin ( MonoObject* methods, EntityMonoObject *monoEntity, int skin ) {
 	ASSERT_DOMAIN();
-	CBaseEntity* entity = monoEntity->GetEntity();
+	CBaseAnimating* entity = monoEntity->GetAnimating();
 	
-	entity->SetTextureFrameIndex( skin );
+	entity->m_nSkin = skin;
 };
 
 static MonoObject* GetEntityOwner ( MonoObject* methods, EntityMonoObject *monoEntity ) {

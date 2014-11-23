@@ -396,6 +396,8 @@ namespace Sharp
         //Called by the server when the player spawns the first time.
         public void InitialSpawn()
         {
+            if (PlayerInitialSpawn != null)
+                PlayerInitialSpawn.Invoke(this);
         }
 
         public TraceResponse GetEyeTrace()

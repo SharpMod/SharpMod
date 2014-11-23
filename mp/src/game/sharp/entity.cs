@@ -284,8 +284,8 @@ namespace Sharp
         void SetTeam(Entity entity, int team);
         int GetTeam(Entity entity);
 
-        void SetSkin(Entity entity, int skin);
-        int GetSkin(Entity entity);
+        void SetSkin(BaseAnimating entity, int skin);
+        int GetSkin(BaseAnimating entity);
 
         void SetSpawnFlags(Entity entity, int flags);
         int GetSpawnFlags(Entity entity);
@@ -477,10 +477,10 @@ namespace Sharp
         public extern int GetTeam(Entity entity);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public extern void SetSkin(Entity entity, int skin);
+        public extern void SetSkin(BaseAnimating entity, int skin);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public extern int GetSkin(Entity entity);
+        public extern int GetSkin(BaseAnimating entity);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern void SetHealth(Entity entity, int health);
@@ -762,10 +762,10 @@ namespace Sharp
         public extern int GetTeam(Entity entity);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public extern void SetSkin(Entity entity, int skin);
+        public extern void SetSkin(BaseAnimating entity, int skin);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public extern int GetSkin(Entity entity);
+        public extern int GetSkin(BaseAnimating entity);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern void SetHealth(Entity entity, int health);
@@ -1125,12 +1125,6 @@ namespace Sharp
             set { _entity.SetTeam(this, value); }
         }
 
-        public int Skin
-        {
-            get { return _entity.GetSkin(this); }
-            set { _entity.SetSkin(this, value); }
-        }
-
         public int Health
         {
             get { return _entity.GetHealth(this); }
@@ -1391,6 +1385,12 @@ namespace Sharp
         {
             get { return _entity.GetCycle(this); }
             set { _entity.SetCycle(this, value); }
+        }
+
+        public int Skin
+        {
+            get { return _entity.GetSkin(this); }
+            set { _entity.SetSkin(this, value); }
         }
 
         public void SetBodygroup(int iGroup, int iValue)

@@ -23,6 +23,18 @@ namespace Sharp
         VoiceBase = 7
     }
 
+    public static class ClientEngine
+    {
+        /// <summary>
+        /// Inserts szCmdString into the command buffer as if it was typed by the client to his/her console.
+        /// Note: Calls to this are checked against FCVAR_CLIENTCMD_CAN_EXECUTE (if that bit is not set, then this function can't change it).
+        /// Call ClientCmd_Unrestricted to have access to FCVAR_CLIENTCMD_CAN_EXECUTE vars.
+        /// </summary>
+        /// <param name="command"></param>
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public static extern void ClientCmd(string command);
+    }
+
     //Server only functions
     public static class ServerEngine
     {
