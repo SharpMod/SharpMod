@@ -145,13 +145,9 @@ namespace SourceForts
 
             Console.WriteLine("Player team: {0}", player.Team);
 
-            foreach (var ent in Game.GetEntitiesByClassname("info_player_team_spawn"))
-            {
-                Console.WriteLine("{0} with team {1} pos: {2}", ent, ent.Team, ent.Origin);
-            }
-
-            List<Entity> spawnPoints = Game.GetEntitiesByClassname("info_player_team_spawn")
-                .Where(t => t.Team == player.Team && t.Index < 100) //Not sure what is happening with the entity index; TODO: MUST FIX.
+            List<BaseAnimating> spawnPoints = Game.GetEntitiesByClassname("info_player_team_spawn")
+                .OfType<BaseAnimating>()
+                .Where(t => t.Skin == player.Team) //Game uses skin id as team...?
                 .ToList();
 
             if (spawnPoints.Count == 0)
@@ -162,8 +158,6 @@ namespace SourceForts
 
             Random rnd = new Random();
             Entity spawnPoint = spawnPoints[rnd.Next(spawnPoints.Count)];
-
-            Console.WriteLine("Player spawning {0} -- {1}", spawnPoint, State);
 
             if (spawnPoint == null)
                 return;

@@ -10,19 +10,6 @@ namespace SourceForts
     [Entity("info_player_team_spawn")]
     public class InfoPlayerTeamSpawn : BaseAnimating
     {
-        public override bool AcceptInput(string name, Entity activator, Entity caller)
-        {
-            Console.WriteLine("Got input for spawn: ", name);
-
-            return true;
-        }
-
-        public override bool KeyValue(string keyName, string keyValue)
-        {
-            Console.WriteLine("Got keyvalue for spawn: ", name);
-
-            return true;
-        }
     }
 
     public abstract class EnvBlockSpawnerBase : BaseAnimating
@@ -31,8 +18,6 @@ namespace SourceForts
 
         public void SpawnBlock(Player player)
         {
-            Console.WriteLine("Spawn block: {0}", TargetClass);
-
             SfBlockBase block = EntityManager.CreateEntity(TargetClass) as SfBlockBase;
 
             if (block == null)
@@ -185,8 +170,6 @@ namespace SourceForts
                 return;
             }
 
-            Console.WriteLine("Allow motion: {0}", motion);
-
             if (!AllowFreeze())
                 return;
 
@@ -217,8 +200,6 @@ namespace SourceForts
     {
         public override bool KeyValue(string keyName, string keyValue)
         {
-            Console.WriteLine("Keyvalue: {0} -- {1}", keyName, keyValue);
-
             if (keyName.Substring(0, 2).ToLower() == "on")
             {
                 this.StoreOutput(keyName, keyValue);
