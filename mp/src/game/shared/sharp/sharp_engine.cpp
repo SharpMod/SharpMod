@@ -172,8 +172,7 @@ static MonoArray* Message_DetermineMulticastRecipients( Vector origin, bool usep
 
 	while ( index > -1 )
 	{
-		Msg("Found index from playerbits:\t %d\n", index );
-
+		//Msg("Found index from playerbits:\t %d\n", index );
 		index = playerbits.FindNextSetBit( index + 1 );
 	}
 

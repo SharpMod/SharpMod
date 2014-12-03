@@ -101,7 +101,7 @@ namespace Sharp
                         networkFields.VectorFields.Add(field);
                     else
                     {
-                        Console.WriteLine("Error: {0}.{1} is not of valid datatype ({2})", entity.GetType().Name, field.Name, type.FullName);
+                        Console.WriteLine("Error: {0}.{1} does not have a valid network datatype ({2})", entity.GetType().Name, field.Name, type.FullName);
                     }
                 }
             }
@@ -133,7 +133,6 @@ namespace Sharp
             }
             else if (type == typeof(bool))
             {
-                Console.WriteLine("Writing a boolean out!");
                 info.SetValue(entity, Convert.ToBoolean( value.IntValue ) );
             } 
             else

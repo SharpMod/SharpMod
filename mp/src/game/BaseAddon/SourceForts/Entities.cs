@@ -107,7 +107,7 @@ namespace SourceForts
         [Networked]
         public int LastTocuhedTeam;
 
-        [Networked]
+        //[Networked]
         public Player LastTocuhedPlayer;
 
         public float HealthFrac
@@ -221,9 +221,7 @@ namespace SourceForts
                     FireNamedOutput("OnCombatPhase", this, this);
                     break;
             }
-
         }
-
     }
 
 
@@ -298,12 +296,12 @@ namespace SourceForts
 
         public override void StartTouch(Entity other)
         {
-            Console.WriteLine("EntityFuncNoFreeze {0}", other);
+            //Console.WriteLine("EntityFuncNoFreeze {0}", other);
         }
     }
 
 
-    //[Entity("func_flagzone")]
+    [Entity("func_flagzone")]
     public class EntityFlagZone : FuncBrush
     {
         protected override void Initialize()
@@ -375,7 +373,8 @@ namespace SourceForts
             {
                 int attachment = parent.LookupAttachment("eyes");
                 Vector position = parent.Origin + new Vector(0, 0, 100);
-
+                
+                //If we are able to get the attachment, position will be changed, and we are going to use that value.
                 if (parent.GetAttachment(attachment, out position))
                 {
                     position.z += 42.0f;
@@ -387,6 +386,8 @@ namespace SourceForts
         public override void StartTouch(Entity other)
         {
             base.StartTouch(other);
+
+            Console.WriteLine("{0} is touching a {1}", this, other);
 
             if (other is Player)
             {
@@ -417,8 +418,11 @@ namespace SourceForts
             Parent = null;
             Physics.Motion = false;
             ResetTimer = 0;
-            Origin = OriginProp.Origin;
-            Angles = OriginProp.Angles;
+            //Origin = OriginProp.Origin;
+            //Angles = OriginProp.Angles;
+            Teleport(OriginProp.Origin, OriginProp.Angles, Vector.Zero);
+
+            Console.WriteLine("\t FLAG BACK ON BASE {0}", this);
         }
 
         public void Pickup(Player player)

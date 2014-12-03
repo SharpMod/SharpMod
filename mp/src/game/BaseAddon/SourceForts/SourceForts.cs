@@ -136,13 +136,14 @@ namespace SourceForts
 
             if (player.Team == (int)Teams.Unassigned)
             {
+                Console.WriteLine("Player spawning with no team. {0}", player.Solid);
                 player.ObserverMove = SpectatorMovement.Roaming;
                 player.Solid = SolidType.NONE;
                 player.MoveType = MoveType.NOCLIP;
-                Console.WriteLine("Player spawning with no team.");
                 return;
             }
 
+            player.Solid = SolidType.BBOX;
             Console.WriteLine("Player team: {0}", player.Team);
 
             List<BaseAnimating> spawnPoints = Game.GetEntitiesByClassname("info_player_team_spawn")
@@ -335,6 +336,8 @@ namespace SourceForts
             RestartTimer();
             RespawnPlayers();
             CleanupGame();
+
+            Flag.RemoveAll();
         }
 
         public void StartFight()
@@ -344,6 +347,8 @@ namespace SourceForts
             RestartTimer();
             RespawnPlayers();
             CleanupGame();
+
+            Flag.SpawnAll();
         }
 
         public void CleanupGame()
@@ -369,6 +374,12 @@ namespace SourceForts
                 player.RemoveAllWeapons();
                 player.Spawn();
             }
+        }
+
+        [ConCommand("sf_forcenext", "Force the game to change to the next stage", CommandFlags.GAMEDLL)]
+        public static void StartNextRound(CCommand command)
+        {
+            Base.SourceForts.StartNext();
         }
     }
 
@@ -648,7 +659,7 @@ namespace SourceForts
         {
             foreach (Entity entity in Game.GetEntitiesByClassname("prop_flag"))
             {
-                PropFlag flag = EntityManager.CreateEntity("sf_flag") as PropFlag;
+                PropFlag flag = (PropFlag)EntityManager.CreateEntity("sf_flag");
                 flag.SetOriginProp(entity);
                 flag.Reset();
                 flag.Spawn();
@@ -714,6 +725,8 @@ namespace SourceForts
                 parent.Properties["_SfFlag"] = null;
             }
 
+            Console.WriteLine("\tRESETING FLAG {0}", flag);
+
             flag.Reset();
         }
 
@@ -731,6 +744,8 @@ namespace SourceForts
 
             if (flag == null)
                 return;
+
+            Console.WriteLine("{0} ({1}) touched {2} ({3}) with {4} ({5})", player, player.Team, zone, zone.Team, flag, flag.Team);
 
             if (player.Team != zone.Team)
                 return;

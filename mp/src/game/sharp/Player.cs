@@ -165,6 +165,9 @@ namespace Sharp
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern BaseAnimating GetActiveWeapon(Player player);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public static extern void ChangeTeam(Player player, int iTeam);
     }
 
     internal class ClientPlayer : IPlayer
@@ -403,6 +406,12 @@ namespace Sharp
         public TraceResponse GetEyeTrace()
         {
             return EngineTrace.TraceRay(EyePosition, EyePosition + EyeAngles.Forward * 20000.0f, Mask.PLAYERSOLID, CollisionGroup.Weapon, null);
+        }
+
+        public virtual void ChangeTeam(int iTeam)
+        {
+            ServerPlayer.ChangeTeam(this, iTeam);
+            Spawn();
         }
 
         /*

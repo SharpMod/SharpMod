@@ -887,16 +887,34 @@ bool CHL2MP_Player::BumpWeapon( CBaseCombatWeapon *pWeapon )
 	return true;
 }
 
-void CHL2MP_Player::ChangeTeam( int iTeam )
+void CHL2MP_Player::ChangeTeam(int iTeam)
 {
-/*	if ( GetNextTeamChangeTime() >= gpGlobals->curtime )
-	{
+	/*	if ( GetNextTeamChangeTime() >= gpGlobals->curtime )
+		{
 		char szReturnString[128];
 		Q_snprintf( szReturnString, sizeof( szReturnString ), "Please wait %d more seconds before trying to switch teams again.\n", (int)(GetNextTeamChangeTime() - gpGlobals->curtime) );
 
 		ClientPrint( this, HUD_PRINTTALK, szReturnString );
 		return;
-	}*/
+		}*/
+
+	UPDATE_DOMAIN();
+	static SharpMethodReference selectItemMethodRef("Sharp", "Player", "ChangeTeam", 1);
+
+	//CBaseCombatWeapon *pItem = Weapon_OwnsThisType( pstr, iSubType );
+	MonoObject* sharpEntity = GetSharpEntity();
+	MonoMethod* selectMethod = selectItemMethodRef.GetVirtual(sharpEntity);
+
+	void* vars[1] = { &iTeam };
+
+	sharp_safe_invoke(selectMethod, sharpEntity, vars);
+}
+
+
+static void BasePlayerChangeTeam(EntityMonoObject *monoEntity, int iTeam)
+{
+	ASSERT_DOMAIN();
+	CHL2MP_Player* player = static_cast<CHL2MP_Player*>(monoEntity->GetPlayer());
 
 	bool bKill = false;
 
@@ -908,37 +926,38 @@ void CHL2MP_Player::ChangeTeam( int iTeam )
 
 	if ( HL2MPRules()->IsTeamplay() == true )
 	{
-		if ( iTeam != GetTeamNumber() && GetTeamNumber() != TEAM_UNASSIGNED )
+		if (iTeam != player->GetTeamNumber() && player->GetTeamNumber() != TEAM_UNASSIGNED)
 		{
 			bKill = true;
 		}
 	}
 
-	BaseClass::ChangeTeam( iTeam );
+	player->CHL2MP_Player::BaseClass::ChangeTeam(iTeam);
 
-	m_flNextTeamChangeTime = gpGlobals->curtime + TEAM_CHANGE_INTERVAL;
+	//player->m_flNextTeamChangeTime = gpGlobals->curtime + TEAM_CHANGE_INTERVAL;
 
 	if ( HL2MPRules()->IsTeamplay() == true )
 	{
-		SetPlayerTeamModel();
+		player->SetPlayerTeamModel();
 	}
 	else
 	{
-		SetPlayerModel();
+		player->SetPlayerModel();
 	}
 
 	if ( iTeam == TEAM_SPECTATOR )
 	{
-		RemoveAllItems( true );
+		player->RemoveAllItems(true);
 
-		State_Transition( STATE_OBSERVER_MODE );
+		player->State_Transition(STATE_OBSERVER_MODE);
 	}
 
 	if ( bKill == true )
 	{
-		CommitSuicide();
+		player->CommitSuicide();
 	}
 }
+static SharpMethodItem methodSelectItem("Sharp.ServerPlayer::ChangeTeam", BasePlayerChangeTeam);
 
 bool CHL2MP_Player::HandleCommand_JoinTeam( int team )
 {

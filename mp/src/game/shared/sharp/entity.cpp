@@ -327,7 +327,7 @@ static void SetEntityParent( MonoObject* methods, EntityMonoObject* monoEntity, 
 	CBaseEntity* entity = monoEntity->GetEntity();
 
 	if( parentEntity == NULL ){
-		entity->SetOwnerEntity( NULL );
+		entity->SetParent(NULL);
 		return;
 	}
 
@@ -896,7 +896,7 @@ static int SharpLookupAttachment(MonoObject* methods, EntityMonoObject *monoEnti
 
 	return attachment;	
 }
-static SharpMethodItem SharpLookupAttachmentItem("Sharp.ServerEntity::LookupAttachment", SharpLookupAttachment );
+static SharpMethodItem SharpLookupAttachmentItem("Sharp.ClientEntity::LookupAttachment", SharpLookupAttachment );
 
 static bool SharpGetAttachment(MonoObject* methods, EntityMonoObject *monoEntity, int number, Vector &origin, QAngle &angles )
 {
@@ -905,7 +905,7 @@ static bool SharpGetAttachment(MonoObject* methods, EntityMonoObject *monoEntity
 
 	return entity->GetAttachment(number, origin, angles);	
 }
-static SharpMethodItem SharpGetAttachmentItem("Sharp.ServerEntity::GetAttachment", SharpGetAttachment );
+static SharpMethodItem SharpGetAttachmentItem("Sharp.ClientEntity::GetAttachment", SharpGetAttachment );
 
 
 #endif

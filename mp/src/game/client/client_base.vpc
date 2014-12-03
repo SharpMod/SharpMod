@@ -99,6 +99,7 @@ $Project
 		$File	"$SRCDIR\game\shared\sharp\sharp_math.cpp"
 		$File	"$SRCDIR\game\shared\sharp\sharp_native_entity.cpp"
 		$File	"$SRCDIR\game\shared\sharp\sharp_native_entity.h"
+		$File	"$SRCDIR\game\shared\sharp\sharp_physics.cpp"
 		$File	"$SRCDIR\game\shared\sharp\sharp_trace.cpp"
 		$File	"$SRCDIR\game\shared\sharp\sharp_usermessage.cpp"
 		$File	"$SRCDIR\game\shared\sharp\sharp_usermessage.h"

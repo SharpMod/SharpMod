@@ -1024,7 +1024,7 @@ void CBasePlayer::SelectItem( const char *pstr, int iSubType )
 	UPDATE_DOMAIN();
 	static SharpMethodReference selectItemMethodRef("Sharp", "Player", "SelectItem", 2);
 
-	CBaseCombatWeapon *pItem = Weapon_OwnsThisType( pstr, iSubType );
+	//CBaseCombatWeapon *pItem = Weapon_OwnsThisType( pstr, iSubType );
 	MonoObject* sharpEntity = GetSharpEntity();
 	MonoMethod* selectMethod = selectItemMethodRef.GetVirtual(sharpEntity);
 	MonoString* monoStr = mono_string_new(g_Sharp.GetDomain(), pstr);

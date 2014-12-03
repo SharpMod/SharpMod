@@ -317,7 +317,7 @@ namespace Sharp
         public int SpecialDSP;
         public Vector? Origin;
         /// <summary>
-        /// ///< NOT DURATION, but rather, some absolute time in the future until which this sound should be delayed
+        /// < NOT DURATION, but rather, some absolute time in the future until which this sound should be delayed
         /// </summary>
         public float SoundTime;
         public float? SoundDuration;
